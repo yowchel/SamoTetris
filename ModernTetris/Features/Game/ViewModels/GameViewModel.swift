@@ -10,6 +10,8 @@ import Combine
 
 /// ViewModel for game screen
 class GameViewModel: ObservableObject {
+    let objectWillChange = PassthroughSubject<Void, Never>()
+
     @Published var engine = GameEngine()
 
     // Gesture handling

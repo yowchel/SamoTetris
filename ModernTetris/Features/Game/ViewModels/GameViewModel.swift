@@ -5,12 +5,10 @@
 //  Created on 2026-01-03
 //
 
-import Foundation
 import SwiftUI
-import Combine
 
 /// ViewModel for game screen
-final class GameViewModel: ObservableObject {
+class GameViewModel: ObservableObject {
     @Published var engine = GameEngine()
 
     // Gesture handling

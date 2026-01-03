@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 /// Main game engine - manages game state and logic
+@MainActor
 class GameEngine: ObservableObject {
     @Published private(set) var board = TetrisBoard()
     @Published private(set) var currentPiece: Tetromino?

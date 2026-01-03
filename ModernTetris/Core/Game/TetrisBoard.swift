@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the game board state
-struct TetrisBoard {
+struct TetrisBoard: Sendable {
     private var grid: [[TetrominoType?]]
 
     let width = GameConstants.boardWidth

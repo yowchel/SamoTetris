@@ -8,7 +8,7 @@
 import Foundation
 
 /// The seven standard Tetris pieces
-enum TetrominoType: String, CaseIterable {
+enum TetrominoType: String, CaseIterable, Sendable {
     case i = "I"
     case o = "O"
     case t = "T"

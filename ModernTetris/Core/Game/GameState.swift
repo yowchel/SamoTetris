@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the current state of the game
-enum GameState: Equatable {
+enum GameState: Equatable, Sendable {
     case idle        // Not started
     case playing     // Active game
     case paused      // Paused

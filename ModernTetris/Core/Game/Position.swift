@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a position on the game board
-struct Position: Equatable, Hashable {
+struct Position: Equatable, Hashable, Sendable {
     var row: Int
     var column: Int
 

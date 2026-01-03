@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a Tetris piece with position and rotation
-struct Tetromino {
+struct Tetromino: Sendable {
     let type: TetrominoType
     var position: Position
     var rotation: Int // 0, 1, 2, 3 (0° 90° 180° 270°)

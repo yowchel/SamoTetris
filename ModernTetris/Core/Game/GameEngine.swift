@@ -5,10 +5,11 @@
 //  Created on 2026-01-03
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 /// Main game engine - manages game state and logic
+@MainActor
 final class GameEngine: ObservableObject {
     @Published private(set) var board = TetrisBoard()
     @Published private(set) var currentPiece: Tetromino?
@@ -22,6 +23,16 @@ final class GameEngine: ObservableObject {
     private var pieceGenerator = PieceGenerator()
     private var gameTimer: Timer?
     private var canHold = true  // Prevents double-hold
+
+    /// Ghost piece shows where current piece will land
+    var ghostPiece: Tetromino? {
+        guard let piece = currentPiece else { return nil }
+        var ghost = piece
+        while board.canPlace(ghost.movedDown()) {
+            ghost = ghost.movedDown()
+        }
+        return ghost
+    }
 
     // MARK: - Game Control
 
@@ -71,7 +82,9 @@ final class GameEngine: ObservableObject {
     private func startTimer() {
         stopTimer()
         gameTimer = Timer.scheduledTimer(withTimeInterval: GameConstants.dropInterval, repeats: true) { [weak self] _ in
-            self?.tick()
+            Task { @MainActor in
+                self?.tick()
+            }
         }
     }
 

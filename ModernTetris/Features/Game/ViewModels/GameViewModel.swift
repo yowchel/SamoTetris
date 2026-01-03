@@ -5,12 +5,23 @@
 //  Created on 2026-01-03
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 /// ViewModel for game screen
-class GameViewModel: ObservableObject {
+@MainActor
+final class GameViewModel: ObservableObject {
     @Published var engine = GameEngine()
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        // Forward engine changes to this ViewModel
+        engine.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
+        .store(in: &cancellables)
+    }
 
     // Gesture handling
     func handleTap() {
@@ -26,7 +37,7 @@ class GameViewModel: ObservableObject {
     }
 
     func handleSwipeDown() {
-        engine.softDrop()
+        _ = engine.softDrop()
     }
 
     func handleLongPress() {

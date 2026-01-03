@@ -22,6 +22,11 @@ extension Color {
     static var vikingGold: Color { currentTheme.primaryAccent }
     static var vikingAccent: Color { currentTheme.secondaryAccent }
 
+    // UI Element Colors
+    static var buttonGray: Color { currentTheme.buttonGray }
+    static var successColor: Color { currentTheme.successColor }
+    static var dangerColor: Color { currentTheme.dangerColor }
+
     // Board Colors
     static var boardBackground: Color { currentTheme.boardBackground }
     static var cellBorder: Color { currentTheme.cellBorder }

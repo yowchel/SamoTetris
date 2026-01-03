@@ -67,48 +67,76 @@ extension GameTheme {
         }
     }
 
+    // UI Element colors
+    var buttonGray: Color {
+        switch self {
+        case .viking: return Color(red: 0.45, green: 0.45, blue: 0.5)
+        case .neon: return Color(red: 0.2, green: 0.2, blue: 0.4)
+        case .metal: return Color(red: 0.4, green: 0.4, blue: 0.45)
+        case .noir: return Color(red: 0.35, green: 0.35, blue: 0.35)
+        }
+    }
+
+    var successColor: Color {
+        switch self {
+        case .viking: return Color(red: 0.3, green: 0.8, blue: 0.5)    // Forest Green
+        case .neon: return Color(red: 0.0, green: 1.0, blue: 0.5)      // Electric Green
+        case .metal: return Color(red: 0.5, green: 0.85, blue: 0.6)    // Metallic Green
+        case .noir: return Color(red: 0.6, green: 0.6, blue: 0.6)      // Gray
+        }
+    }
+
+    var dangerColor: Color {
+        switch self {
+        case .viking: return Color(red: 0.9, green: 0.25, blue: 0.25)  // Blood Red
+        case .neon: return Color(red: 1.0, green: 0.1, blue: 0.4)      // Hot Pink
+        case .metal: return Color(red: 0.9, green: 0.4, blue: 0.4)     // Brushed Red
+        case .noir: return Color(red: 0.5, green: 0.5, blue: 0.5)      // Dark Gray
+        }
+    }
+
     // Tetromino colors
     func colorForTetromino(_ type: TetrominoType) -> Color {
         switch self {
         case .viking:
             switch type {
-            case .i: return Color(red: 0.4, green: 0.7, blue: 0.85)   // Ice Blue
-            case .o: return Color(red: 0.85, green: 0.7, blue: 0.3)   // Gold
-            case .t: return Color(red: 0.65, green: 0.3, blue: 0.75)  // Royal Purple
-            case .s: return Color(red: 0.4, green: 0.75, blue: 0.45)  // Forest Green
-            case .z: return Color(red: 0.85, green: 0.3, blue: 0.25)  // Blood Red
-            case .j: return Color(red: 0.3, green: 0.5, blue: 0.85)   // Nordic Blue
-            case .l: return Color(red: 0.9, green: 0.6, blue: 0.2)    // Bronze
+            case .i: return Color(red: 0.2, green: 0.8, blue: 1.0)    // Bright Ice Blue
+            case .o: return Color(red: 1.0, green: 0.85, blue: 0.2)   // Bright Gold
+            case .t: return Color(red: 0.75, green: 0.25, blue: 0.95) // Vivid Purple
+            case .s: return Color(red: 0.3, green: 0.95, blue: 0.5)   // Vibrant Green
+            case .z: return Color(red: 1.0, green: 0.2, blue: 0.15)   // Bright Red
+            case .j: return Color(red: 0.25, green: 0.55, blue: 1.0)  // Bright Blue
+            case .l: return Color(red: 1.0, green: 0.65, blue: 0.15)  // Bright Orange
             }
         case .neon:
             switch type {
-            case .i: return Color(red: 0.0, green: 1.0, blue: 1.0)    // Cyan
-            case .o: return Color(red: 1.0, green: 1.0, blue: 0.0)    // Yellow
-            case .t: return Color(red: 1.0, green: 0.0, blue: 1.0)    // Magenta
-            case .s: return Color(red: 0.0, green: 1.0, blue: 0.0)    // Green
-            case .z: return Color(red: 1.0, green: 0.0, blue: 0.0)    // Red
-            case .j: return Color(red: 0.0, green: 0.5, blue: 1.0)    // Blue
-            case .l: return Color(red: 1.0, green: 0.6, blue: 0.0)    // Orange
+            case .i: return Color(red: 0.0, green: 0.95, blue: 1.0)   // Electric Cyan
+            case .o: return Color(red: 1.0, green: 0.95, blue: 0.0)   // Electric Yellow
+            case .t: return Color(red: 1.0, green: 0.15, blue: 1.0)   // Hot Pink
+            case .s: return Color(red: 0.0, green: 1.0, blue: 0.35)   // Neon Green
+            case .z: return Color(red: 1.0, green: 0.1, blue: 0.3)    // Neon Red
+            case .j: return Color(red: 0.2, green: 0.6, blue: 1.0)    // Electric Blue
+            case .l: return Color(red: 1.0, green: 0.5, blue: 0.0)    // Neon Orange
             }
         case .metal:
             switch type {
-            case .i: return Color(red: 0.7, green: 0.85, blue: 1.0)   // Steel Blue
-            case .o: return Color(red: 0.9, green: 0.8, blue: 0.5)    // Brass
-            case .t: return Color(red: 0.7, green: 0.6, blue: 0.8)    // Titanium Purple
-            case .s: return Color(red: 0.5, green: 0.75, blue: 0.6)   // Oxidized Copper
-            case .z: return Color(red: 0.8, green: 0.5, blue: 0.5)    // Rust Red
-            case .j: return Color(red: 0.5, green: 0.6, blue: 0.85)   // Chrome Blue
-            case .l: return Color(red: 0.85, green: 0.65, blue: 0.4)  // Bronze
+            case .i: return Color(red: 0.6, green: 0.9, blue: 1.0)    // Chrome Blue
+            case .o: return Color(red: 1.0, green: 0.9, blue: 0.4)    // Polished Gold
+            case .t: return Color(red: 0.85, green: 0.5, blue: 0.95)  // Metallic Purple
+            case .s: return Color(red: 0.4, green: 0.85, blue: 0.65)  // Copper Green
+            case .z: return Color(red: 0.95, green: 0.45, blue: 0.4)  // Brushed Red
+            case .j: return Color(red: 0.45, green: 0.7, blue: 1.0)   // Steel Blue
+            case .l: return Color(red: 1.0, green: 0.7, blue: 0.35)   // Bronze
             }
         case .noir:
             switch type {
-            case .i: return Color(red: 0.9, green: 0.9, blue: 0.9)    // White
-            case .o: return Color(red: 0.8, green: 0.8, blue: 0.8)    // Light Gray
-            case .t: return Color(red: 0.7, green: 0.7, blue: 0.7)    // Gray
-            case .s: return Color(red: 0.6, green: 0.6, blue: 0.6)    // Medium Gray
-            case .z: return Color(red: 0.5, green: 0.5, blue: 0.5)    // Dark Gray
-            case .j: return Color(red: 0.4, green: 0.4, blue: 0.4)    // Darker Gray
-            case .l: return Color(red: 0.3, green: 0.3, blue: 0.3)    // Almost Black
+            case .i: return Color(red: 1.0, green: 1.0, blue: 1.0)    // Pure White
+            case .o: return Color(red: 0.9, green: 0.9, blue: 0.0)    // Film Yellow
+            case .t: return Color(red: 0.85, green: 0.85, blue: 0.85) // Bright Gray
+            case .s: return Color(red: 0.7, green: 0.7, blue: 0.7)    // Medium Gray
+            case .z: return Color(red: 0.55, green: 0.55, blue: 0.55) // Slate Gray
+            case .j: return Color(red: 0.4, green: 0.4, blue: 0.4)    // Charcoal
+            case .l: return Color(red: 0.25, green: 0.25, blue: 0.25) // Deep Gray
             }
         }
     }

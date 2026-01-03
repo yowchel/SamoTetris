@@ -13,6 +13,7 @@ struct BoardView: View {
     let currentPiece: Tetromino?
     let ghostPiece: Tetromino?
     let blockSize: CGFloat
+    let clearingLines: Set<Int>
 
     var body: some View {
         ZStack {
@@ -44,6 +45,7 @@ struct BoardView: View {
     private func cellView(at position: Position) -> some View {
         let cellType = cellTypeAt(position)
         let isGhost = isGhostAt(position)
+        let isClearing = clearingLines.contains(position.row)
 
         if isGhost && cellType == nil {
             // Ghost piece - semi-transparent
@@ -55,6 +57,9 @@ struct BoardView: View {
             }
         } else {
             BlockView(type: cellType, size: blockSize)
+                .opacity(isClearing ? 0.3 : 1.0)
+                .scaleEffect(isClearing ? 0.8 : 1.0)
+                .animation(.easeInOut(duration: 0.15).repeatCount(2, autoreverses: true), value: isClearing)
         }
     }
 

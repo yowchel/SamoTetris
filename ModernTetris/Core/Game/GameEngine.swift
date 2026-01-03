@@ -19,6 +19,7 @@ final class GameEngine: ObservableObject {
     @Published private(set) var score: Int = 0
     @Published private(set) var linesCleared: Int = 0
     @Published private(set) var tetrisCount: Int = 0
+    @Published private(set) var clearingLines: Set<Int> = []  // Lines currently being cleared with animation
 
     private var pieceGenerator = PieceGenerator()
     private var gameTimer: Timer?
@@ -245,30 +246,50 @@ final class GameEngine: ObservableObject {
         let fullLines = board.fullLines()
 
         if !fullLines.isEmpty {
-            // Clear lines
-            board.clearLines(fullLines)
+            // Mark lines for clearing animation
+            clearingLines = Set(fullLines)
 
-            // Update stats
-            let lineCount = fullLines.count
-            linesCleared += lineCount
+            // Animate line clear
+            Task { @MainActor in
+                // Wait for animation
+                try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
 
-            // Award points
-            let points = ScoreManager.scoreForLines(count: lineCount)
-            score += points
+                // Clear lines
+                board.clearLines(fullLines)
+                clearingLines = []
 
-            // Track Tetris
-            if ScoreManager.isTetris(lineCount: lineCount) {
-                tetrisCount += 1
+                // Update stats
+                let lineCount = fullLines.count
+                linesCleared += lineCount
+
+                // Award points
+                let points = ScoreManager.scoreForLines(count: lineCount)
+                score += points
+
+                // Track Tetris
+                if ScoreManager.isTetris(lineCount: lineCount) {
+                    tetrisCount += 1
+                }
+
+                // Check game over
+                if board.isGameOver() {
+                    gameOver()
+                    return
+                }
+
+                // Spawn next piece
+                spawnNewPiece()
             }
-        }
+        } else {
+            // No lines to clear - spawn immediately
+            // Check game over
+            if board.isGameOver() {
+                gameOver()
+                return
+            }
 
-        // Check game over
-        if board.isGameOver() {
-            gameOver()
-            return
+            // Spawn next piece
+            spawnNewPiece()
         }
-
-        // Spawn next piece
-        spawnNewPiece()
     }
 }

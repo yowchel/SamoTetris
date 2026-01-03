@@ -264,9 +264,9 @@ struct LocalizedStrings {
 
     var startBattle: String {
         switch language {
-        case .english: return "START BATTLE"
-        case .russian: return "НАЧАТЬ БОЙ"
-        case .french: return "COMMENCER"
+        case .english: return "START GAME"
+        case .russian: return "НАЧАТЬ ИГРУ"
+        case .french: return "COMMENCER LE JEU"
         }
     }
 

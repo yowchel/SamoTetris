@@ -60,7 +60,7 @@ struct MainMenuView: View {
                     menuButton(
                         icon: "gearshape.fill",
                         title: LocalizedStrings.current.settings,
-                        gradient: [.gray, .gray.opacity(0.7)]
+                        gradient: [.buttonGray, .buttonGray.opacity(0.7)]
                     ) {
                         showSettings = true
                     }

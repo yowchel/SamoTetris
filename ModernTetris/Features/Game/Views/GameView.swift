@@ -264,8 +264,8 @@ struct GameView: View {
         VStack(spacing: 20) {
             Text(LocalizedStrings.current.defeated)
                 .font(.system(size: 32, weight: .heavy))
-                .foregroundColor(.red)
-                .shadow(color: .red.opacity(0.5), radius: 10)
+                .foregroundColor(.dangerColor)
+                .shadow(color: .dangerColor.opacity(0.5), radius: 10)
 
             Text("\(LocalizedStrings.current.finalScore) \(viewModel.engine.score)")
                 .font(.system(size: 18, weight: .semibold))
@@ -291,6 +291,7 @@ struct GameView: View {
                         )
                     )
                     .cornerRadius(20)
+                    .shadow(color: .vikingGold.opacity(0.4), radius: 8)
                 }
 
                 Button(action: {
@@ -306,7 +307,7 @@ struct GameView: View {
                     .padding(.vertical, 12)
                     .background(
                         LinearGradient(
-                            colors: [.gray, .gray.opacity(0.8)],
+                            colors: [.buttonGray, .buttonGray.opacity(0.8)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -321,7 +322,7 @@ struct GameView: View {
                 .fill(Color.vikingWood.opacity(0.95))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.red.opacity(0.6), lineWidth: 3)
+                        .stroke(Color.dangerColor.opacity(0.6), lineWidth: 3)
                 )
         )
     }
@@ -346,12 +347,13 @@ struct GameView: View {
                     .padding(.vertical, 12)
                     .background(
                         LinearGradient(
-                            colors: [.green, .green.opacity(0.8)],
+                            colors: [.successColor, .successColor.opacity(0.8)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
                     .cornerRadius(20)
+                    .shadow(color: .successColor.opacity(0.4), radius: 8)
                 }
 
                 Button(action: {
@@ -367,7 +369,7 @@ struct GameView: View {
                     .padding(.vertical, 12)
                     .background(
                         LinearGradient(
-                            colors: [.gray, .gray.opacity(0.8)],
+                            colors: [.buttonGray, .buttonGray.opacity(0.8)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )

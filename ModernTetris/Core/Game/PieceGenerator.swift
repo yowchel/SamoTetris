@@ -9,7 +9,7 @@ import Foundation
 
 /// Generates pieces using the 7-bag randomization algorithm
 /// This ensures fair distribution - you'll see all 7 pieces within every 7 pieces
-class PieceGenerator: @unchecked Sendable {
+class PieceGenerator {
     private var bag: [TetrominoType] = []
     private var nextPieces: [TetrominoType] = []
 

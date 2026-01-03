@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 /// ViewModel for game screen
-final class GameViewModel: ObservableObject, @unchecked Sendable {
+final class GameViewModel: ObservableObject {
     @Published var engine = GameEngine()
 
     // Gesture handling

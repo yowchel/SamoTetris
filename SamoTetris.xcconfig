@@ -1,0 +1,5 @@
+// Xcode configuration for SamoTetris
+// Disable strict concurrency checking
+
+SWIFT_STRICT_CONCURRENCY = minimal
+SWIFT_VERSION = 5.0

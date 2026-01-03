@@ -9,7 +9,6 @@ import Foundation
 import Combine
 
 /// Main game engine - manages game state and logic
-@MainActor
 final class GameEngine: ObservableObject {
     @Published private(set) var board = TetrisBoard()
     @Published private(set) var currentPiece: Tetromino?
@@ -20,8 +19,8 @@ final class GameEngine: ObservableObject {
     @Published private(set) var linesCleared: Int = 0
     @Published private(set) var tetrisCount: Int = 0
 
-    nonisolated(unsafe) private var pieceGenerator = PieceGenerator()
-    nonisolated(unsafe) private var gameTimer: Timer?
+    private var pieceGenerator = PieceGenerator()
+    private var gameTimer: Timer?
     private var canHold = true  // Prevents double-hold
 
     // MARK: - Game Control

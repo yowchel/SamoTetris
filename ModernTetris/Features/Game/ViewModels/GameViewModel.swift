@@ -9,8 +9,7 @@ import Foundation
 import SwiftUI
 
 /// ViewModel for game screen
-@MainActor
-class GameViewModel: ObservableObject {
+final class GameViewModel: ObservableObject {
     @Published var engine = GameEngine()
 
     // Gesture handling

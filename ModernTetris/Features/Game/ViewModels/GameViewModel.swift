@@ -5,7 +5,8 @@
 //  Created on 2026-01-03
 //
 
-import SwiftUI
+import Foundation
+import Combine
 
 /// ViewModel for game screen
 class GameViewModel: ObservableObject {

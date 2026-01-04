@@ -27,6 +27,11 @@ extension Color {
     static var successColor: Color { currentTheme.successColor }
     static var dangerColor: Color { currentTheme.dangerColor }
 
+    // Text Colors
+    static var primaryText: Color { currentTheme.primaryText }
+    static var secondaryText: Color { currentTheme.secondaryText }
+    static var titleText: Color { currentTheme.titleText }
+
     // Board Colors
     static var boardBackground: Color { currentTheme.boardBackground }
     static var cellBorder: Color { currentTheme.cellBorder }

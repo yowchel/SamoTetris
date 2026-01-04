@@ -34,8 +34,8 @@ struct MainMenuView: View {
                 // Title
                 Text(LocalizedStrings.current.appTitle)
                     .font(.system(size: 48, weight: .heavy))
-                    .foregroundColor(.vikingGold)
-                    .shadow(color: .vikingGold.opacity(0.5), radius: 15)
+                    .foregroundColor(.titleText)
+                    .shadow(color: .titleText.opacity(0.5), radius: 15)
 
                 Spacer()
 
@@ -44,7 +44,7 @@ struct MainMenuView: View {
                     menuButton(
                         icon: "play.fill",
                         title: LocalizedStrings.current.play,
-                        gradient: [.vikingGold, Color(red: 0.7, green: 0.55, blue: 0.2)]
+                        gradient: [.vikingGold, .vikingGold.opacity(0.7)]
                     ) {
                         showGame = true
                     }
@@ -71,7 +71,7 @@ struct MainMenuView: View {
                 // Version info
                 Text(LocalizedStrings.current.version)
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(.secondaryText.opacity(0.6))
                     .padding(.bottom, 12)
             }
             .padding()
@@ -107,7 +107,7 @@ struct MainMenuView: View {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 16, weight: .semibold))
             }
-            .foregroundColor(.white)
+            .foregroundColor(.primaryText)
             .padding(.horizontal, 24)
             .frame(maxWidth: 350, minHeight: 60, maxHeight: 60)
             .background(
@@ -122,7 +122,7 @@ struct MainMenuView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    .stroke(Color.primaryText.opacity(0.2), lineWidth: 1)
             )
             .shadow(color: gradient[0].opacity(0.4), radius: 10, x: 0, y: 5)
         }

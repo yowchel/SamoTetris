@@ -94,6 +94,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
         .sheet(isPresented: $showLanguagePicker) {
             pickerView(
                 title: LocalizedStrings.current.languageLabel,
@@ -140,7 +141,7 @@ struct SettingsView: View {
 
             Text(title)
                 .font(.system(size: 16))
-                .foregroundColor(.white)
+                .foregroundColor(.primaryText)
 
             Spacer()
 
@@ -160,13 +161,13 @@ struct SettingsView: View {
 
             Text(title)
                 .font(.system(size: 16))
-                .foregroundColor(.white)
+                .foregroundColor(.primaryText)
 
             Spacer()
 
             Text(value)
                 .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(.secondaryText)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -182,13 +183,13 @@ struct SettingsView: View {
 
                 Text(title)
                     .font(.system(size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(.secondaryText)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
@@ -209,7 +210,7 @@ struct SettingsView: View {
                                 HStack {
                                     Text(item.0)
                                         .font(.system(size: 18))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.primaryText)
 
                                     Spacer()
 
@@ -243,6 +244,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
     }
 }
 

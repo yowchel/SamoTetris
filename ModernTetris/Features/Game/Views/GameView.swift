@@ -55,7 +55,7 @@ struct GameView: View {
                                 blockSize: 8
                             )
                             .frame(width: 45, height: 45)
-                            .background(Color.black.opacity(0.3))
+                            .background(Color.boardBackground.opacity(0.7))
                             .cornerRadius(6)
 
                             Spacer()
@@ -67,7 +67,8 @@ struct GameView: View {
                             board: viewModel.engine.board,
                             currentPiece: viewModel.engine.currentPiece,
                             ghostPiece: viewModel.engine.ghostPiece,
-                            blockSize: calculateBlockSize(geometry: geometry)
+                            blockSize: calculateBlockSize(geometry: geometry),
+                            clearingLines: viewModel.engine.clearingLines
                         )
                         .gesture(dragGesture)
                         .onTapGesture {
@@ -95,7 +96,7 @@ struct GameView: View {
                                 blockSize: 6
                             )
                             .frame(width: 45, height: 100)
-                            .background(Color.black.opacity(0.3))
+                            .background(Color.boardBackground.opacity(0.7))
                             .cornerRadius(6)
 
                             Spacer()
@@ -149,7 +150,7 @@ struct GameView: View {
         HStack(spacing: 16) {
             statItem(label: LocalizedStrings.current.score, value: "\(viewModel.engine.score)", color: .vikingGold)
             Spacer()
-            statItem(label: LocalizedStrings.current.lines, value: "\(viewModel.engine.linesCleared)", color: .white)
+            statItem(label: LocalizedStrings.current.lines, value: "\(viewModel.engine.linesCleared)", color: .primaryText)
             Spacer()
             statItem(label: LocalizedStrings.current.tetris, value: "\(viewModel.engine.tetrisCount)", color: .vikingAccent)
         }
@@ -169,7 +170,7 @@ struct GameView: View {
         VStack(spacing: 2) {
             Text(label)
                 .font(.system(size: 9, weight: .bold))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(.secondaryText)
             Text(value)
                 .font(.system(size: 16, weight: .heavy))
                 .foregroundColor(color)
@@ -182,14 +183,14 @@ struct GameView: View {
         VStack(spacing: 20) {
             Text(LocalizedStrings.current.appTitle)
                 .font(.system(size: 32, weight: .heavy))
-                .foregroundColor(.vikingGold)
-                .shadow(color: .vikingGold.opacity(0.5), radius: 10)
+                .foregroundColor(.titleText)
+                .shadow(color: .titleText.opacity(0.5), radius: 10)
 
             // Controls guide
             VStack(alignment: .leading, spacing: 10) {
                 Text(LocalizedStrings.current.controls)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.vikingGold.opacity(0.8))
+                    .foregroundColor(.titleText.opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .center)
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -204,7 +205,7 @@ struct GameView: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.3))
+                    .fill(Color.boardBackground.opacity(0.6))
             )
 
             Button(action: {
@@ -215,12 +216,12 @@ struct GameView: View {
                     Text(LocalizedStrings.current.startBattle)
                 }
                 .font(.system(size: 20, weight: .bold))
-                .foregroundColor(.white)
+                .foregroundColor(.primaryText)
                 .padding(.horizontal, 40)
                 .padding(.vertical, 16)
                 .background(
                     LinearGradient(
-                        colors: [.vikingGold, Color(red: 0.7, green: 0.55, blue: 0.2)],
+                        colors: [.vikingGold, .vikingGold.opacity(0.7)],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -244,7 +245,7 @@ struct GameView: View {
                             lineWidth: 3
                         )
                 )
-                .shadow(color: .black.opacity(0.5), radius: 20)
+                .shadow(color: Color.boardBackground.opacity(0.8), radius: 20)
         )
     }
 
@@ -256,7 +257,7 @@ struct GameView: View {
                 .frame(width: 24)
             Text(text)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.white.opacity(0.9))
+                .foregroundColor(.primaryText)
         }
     }
 
@@ -269,7 +270,7 @@ struct GameView: View {
 
             Text("\(LocalizedStrings.current.finalScore) \(viewModel.engine.score)")
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(.primaryText)
 
             VStack(spacing: 12) {
                 Button(action: {
@@ -280,7 +281,7 @@ struct GameView: View {
                         Text(LocalizedStrings.current.playAgain)
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 200)
                     .padding(.vertical, 12)
                     .background(
@@ -302,7 +303,7 @@ struct GameView: View {
                         Text(LocalizedStrings.current.mainMenu)
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 200)
                     .padding(.vertical, 12)
                     .background(
@@ -331,7 +332,7 @@ struct GameView: View {
         VStack(spacing: 20) {
             Text(LocalizedStrings.current.paused)
                 .font(.system(size: 28, weight: .heavy))
-                .foregroundColor(.vikingAccent)
+                .foregroundColor(.titleText)
 
             VStack(spacing: 12) {
                 Button(action: {
@@ -342,7 +343,7 @@ struct GameView: View {
                         Text(LocalizedStrings.current.resume)
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 200)
                     .padding(.vertical, 12)
                     .background(
@@ -364,7 +365,7 @@ struct GameView: View {
                         Text(LocalizedStrings.current.mainMenu)
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 200)
                     .padding(.vertical, 12)
                     .background(

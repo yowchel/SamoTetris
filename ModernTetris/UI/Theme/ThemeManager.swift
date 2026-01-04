@@ -95,6 +95,34 @@ extension GameTheme {
         }
     }
 
+    // Text colors
+    var primaryText: Color {
+        switch self {
+        case .viking: return Color(red: 0.95, green: 0.95, blue: 0.97)  // Off-white
+        case .neon: return Color(red: 0.0, green: 1.0, blue: 0.9)       // Bright Cyan
+        case .metal: return Color(red: 0.9, green: 0.95, blue: 1.0)     // Light Steel
+        case .noir: return Color(red: 0.95, green: 0.95, blue: 0.95)    // Pure White
+        }
+    }
+
+    var secondaryText: Color {
+        switch self {
+        case .viking: return Color(red: 0.7, green: 0.7, blue: 0.75)    // Muted White
+        case .neon: return Color(red: 1.0, green: 0.4, blue: 1.0)       // Bright Magenta
+        case .metal: return Color(red: 0.7, green: 0.8, blue: 0.9)      // Soft Steel
+        case .noir: return Color(red: 0.7, green: 0.7, blue: 0.7)       // Light Gray
+        }
+    }
+
+    var titleText: Color {
+        switch self {
+        case .viking: return self.primaryAccent  // Gold
+        case .neon: return Color(red: 0.0, green: 1.0, blue: 1.0)  // Electric Cyan
+        case .metal: return Color(red: 0.8, green: 0.95, blue: 1.0)  // Bright Steel
+        case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)  // Pure White
+        }
+    }
+
     // Tetromino colors
     func colorForTetromino(_ type: TetrominoType) -> Color {
         switch self {

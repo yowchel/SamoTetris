@@ -10,15 +10,18 @@ import SwiftUI
 /// Settings screen
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
-    @AppStorage("soundEnabled") private var soundEnabled = true
-    @AppStorage("musicEnabled") private var musicEnabled = true
+    @ObservedObject private var audioManager = AudioManager.shared
     @AppStorage("hapticEnabled") private var hapticEnabled = true
     @AppStorage("ghostPieceEnabled") private var ghostPieceEnabled = true
-    @AppStorage("selectedTheme") private var selectedTheme = "Viking"
     @AppStorage("selectedLanguage") private var selectedLanguage = "en"
 
     @State private var showLanguagePicker = false
-    @State private var showThemePicker = false
+
+    // Track previous values to detect changes
+    @State private var previousSoundEnabled: Bool?
+    @State private var previousMusicEnabled: Bool?
+    @State private var previousHapticEnabled: Bool?
+    @State private var previousGhostPieceEnabled: Bool?
 
     var body: some View {
         NavigationView {
@@ -36,27 +39,18 @@ struct SettingsView: View {
                             )
                         }
 
-                        // Theme settings
-                        settingsSection(title: LocalizedStrings.current.theme) {
-                            settingSelector(
-                                icon: "paintbrush.fill",
-                                title: selectedTheme,
-                                action: { showThemePicker = true }
-                            )
-                        }
-
                         // Audio settings
                         settingsSection(title: LocalizedStrings.current.audio) {
                             settingToggle(
                                 icon: "speaker.wave.3.fill",
                                 title: LocalizedStrings.current.soundEffects,
-                                isOn: $soundEnabled
+                                isOn: $audioManager.soundEnabled
                             )
 
                             settingToggle(
                                 icon: "music.note",
                                 title: LocalizedStrings.current.music,
-                                isOn: $musicEnabled
+                                isOn: $audioManager.musicEnabled
                             )
                         }
 
@@ -87,10 +81,14 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizedStrings.current.done) {
+                    Button(action: {
+                        audioManager.buttonClick()
                         dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.vikingGold)
                     }
-                    .foregroundColor(.vikingGold)
                 }
             }
         }
@@ -102,12 +100,36 @@ struct SettingsView: View {
                 selectedValue: $selectedLanguage
             )
         }
-        .sheet(isPresented: $showThemePicker) {
-            pickerView(
-                title: LocalizedStrings.current.theme,
-                items: GameTheme.allCases.map { ($0.displayName, $0.rawValue) },
-                selectedValue: $selectedTheme
-            )
+        .onAppear {
+            // Initialize previous values
+            previousSoundEnabled = audioManager.soundEnabled
+            previousMusicEnabled = audioManager.musicEnabled
+            previousHapticEnabled = hapticEnabled
+            previousGhostPieceEnabled = ghostPieceEnabled
+        }
+        .onChange(of: audioManager.soundEnabled) { newValue in
+            if let previous = previousSoundEnabled, previous != newValue {
+                audioManager.buttonClick()
+            }
+            previousSoundEnabled = newValue
+        }
+        .onChange(of: audioManager.musicEnabled) { newValue in
+            if let previous = previousMusicEnabled, previous != newValue {
+                audioManager.buttonClick()
+            }
+            previousMusicEnabled = newValue
+        }
+        .onChange(of: hapticEnabled) { newValue in
+            if let previous = previousHapticEnabled, previous != newValue {
+                audioManager.buttonClick()
+            }
+            previousHapticEnabled = newValue
+        }
+        .onChange(of: ghostPieceEnabled) { newValue in
+            if let previous = previousGhostPieceEnabled, previous != newValue {
+                audioManager.buttonClick()
+            }
+            previousGhostPieceEnabled = newValue
         }
     }
 
@@ -174,7 +196,10 @@ struct SettingsView: View {
     }
 
     private func settingSelector(icon: String, title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        Button(action: {
+            audioManager.buttonClick()
+            action()
+        }) {
             HStack {
                 Image(systemName: icon)
                     .font(.system(size: 20))
@@ -205,6 +230,7 @@ struct SettingsView: View {
                     VStack(spacing: 12) {
                         ForEach(items, id: \.1) { item in
                             Button(action: {
+                                audioManager.buttonClick()
                                 selectedValue.wrappedValue = item.1
                             }) {
                                 HStack {
@@ -236,11 +262,14 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizedStrings.current.done) {
+                    Button(action: {
+                        audioManager.buttonClick()
                         showLanguagePicker = false
-                        showThemePicker = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.vikingGold)
                     }
-                    .foregroundColor(.vikingGold)
                 }
             }
         }

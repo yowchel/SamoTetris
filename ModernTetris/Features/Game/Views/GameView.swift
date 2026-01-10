@@ -11,6 +11,8 @@ import SwiftUI
 struct GameView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel = GameViewModel()
+    @ObservedObject private var shopManager = ShopManager.shared
+    @ObservedObject private var audioManager = AudioManager.shared
 
     var body: some View {
         GeometryReader { geometry in
@@ -18,57 +20,163 @@ struct GameView: View {
                 // Background
                 Color.vikingBackground.ignoresSafeArea()
 
-                VStack(spacing: 8) {
-                    // Top bar with stats and pause
-                    HStack(spacing: 12) {
-                        // Stats
-                        statsBar
+                // Falling tetromino animation - more pieces for game screen
+                FallingTetrominoBackground(isGameScreen: true)
+                    .ignoresSafeArea()
+                    .opacity(0.3)
 
-                        // Pause button
-                        if viewModel.engine.state == .playing {
-                            Button(action: {
+                VStack(spacing: 0) {
+                    // Top bar with Pause button (44x44 Apple standard) - centered
+                    HStack {
+                        Spacer()
+
+                        Button(action: {
+                            if viewModel.engine.state == .playing {
+                                audioManager.buttonClick()
                                 viewModel.pauseGame()
-                            }) {
-                                Image(systemName: "pause.circle.fill")
-                                    .font(.system(size: 36))
-                                    .foregroundColor(.vikingGold)
-                                    .frame(width: 44, height: 44)
-                                    .contentShape(Rectangle())
                             }
+                        }) {
+                            Image(systemName: "pause.circle.fill")
+                                .font(.system(size: 32))
+                                .foregroundColor(.vikingGold)
+                                .frame(width: 44, height: 44)
                         }
+                        .opacity(viewModel.engine.state == .playing ? 1 : 0)
+                        .disabled(viewModel.engine.state != .playing)
+
+                        Spacer()
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.top, 8)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 12)
+                    .frame(height: 68)
 
-                    // Game area with side panels
+                    // Main game area
                     HStack(spacing: 8) {
-                        // Hold piece - left side
-                        VStack(spacing: 4) {
-                            Text(LocalizedStrings.current.hold)
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(.vikingGold.opacity(0.7))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
+                        // Left panel - Hold + Stats
+                        VStack(spacing: 0) {
+                            // HOLD section
+                            VStack(spacing: 0) {
+                                Text(LocalizedStrings.current.hold)
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .foregroundColor(.primaryText)
+                                    .textCase(.uppercase)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 6)
+                                    .background(Color.vikingWood.opacity(0.9))
 
-                            HoldPieceView(
-                                piece: viewModel.engine.heldPiece,
-                                blockSize: 8
+                                HoldPieceView(
+                                    piece: viewModel.engine.heldPiece,
+                                    blockSize: 7
+                                )
+                                .frame(height: 60)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                            }
+                            .background(Color.boardBackground.opacity(0.6))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primaryText.opacity(0.2), lineWidth: 1)
                             )
-                            .frame(width: 45, height: 45)
-                            .background(Color.boardBackground.opacity(0.7))
-                            .cornerRadius(6)
+
+                            Spacer()
+                                .frame(height: 8)
+
+                            // SCORE section
+                            VStack(spacing: 4) {
+                                Text(LocalizedStrings.current.score)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundColor(.secondaryText)
+                                    .textCase(.uppercase)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.top, 6)
+
+                                Text("\(viewModel.engine.score)")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.vikingGold)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.bottom, 6)
+                            }
+                            .background(Color.boardBackground.opacity(0.6))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primaryText.opacity(0.2), lineWidth: 1)
+                            )
+
+                            Spacer()
+                                .frame(height: 8)
+
+                            // TETRIS section
+                            VStack(spacing: 4) {
+                                Text(LocalizedStrings.current.tetris)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundColor(.secondaryText)
+                                    .textCase(.uppercase)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.top, 6)
+
+                                Text("\(viewModel.engine.tetrisCount)")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.dangerColor)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.bottom, 6)
+                            }
+                            .background(Color.boardBackground.opacity(0.6))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primaryText.opacity(0.2), lineWidth: 1)
+                            )
+
+                            Spacer()
+                                .frame(height: 8)
+
+                            // LINES section
+                            VStack(spacing: 4) {
+                                Text(LocalizedStrings.current.lines)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundColor(.secondaryText)
+                                    .textCase(.uppercase)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.top, 6)
+
+                                Text("\(viewModel.engine.linesCleared)")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.primaryText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.bottom, 6)
+                            }
+                            .background(Color.boardBackground.opacity(0.6))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primaryText.opacity(0.2), lineWidth: 1)
+                            )
 
                             Spacer()
                         }
-                        .frame(width: 50)
+                        .frame(width: 70)
 
-                        // Game board - clean, no borders
-                        BoardView(
-                            board: viewModel.engine.board,
-                            currentPiece: viewModel.engine.currentPiece,
-                            ghostPiece: viewModel.engine.ghostPiece,
-                            blockSize: calculateBlockSize(geometry: geometry),
-                            clearingLines: viewModel.engine.clearingLines
+                        // Main board
+                        ZStack {
+                            BoardView(
+                                board: viewModel.engine.board,
+                                currentPiece: viewModel.engine.currentPiece,
+                                ghostPiece: viewModel.engine.ghostPiece,
+                                blockSize: calculateBlockSize(geometry: geometry),
+                                clearingLines: viewModel.engine.clearingLines
+                            )
+                            .overlay(
+                                Group {
+                                    if let frame = shopManager.currentBoardFrame {
+                                        Rectangle()
+                                            .strokeBorder(frame.frameColor, lineWidth: frame.lineWidth)
+                                            .shadow(color: frame.glowColor.opacity(0.5), radius: 6)
+                                    }
+                                }
+                            )
+                        }
+                        .overlay(
+                            Rectangle()
+                                .strokeBorder(Color.primaryText.opacity(0.3), lineWidth: 2)
                         )
                         .gesture(dragGesture)
                         .onTapGesture {
@@ -83,29 +191,43 @@ struct GameView: View {
                         }
                         .simultaneousGesture(doubleTapGesture)
 
-                        // Next pieces - right side
-                        VStack(spacing: 4) {
-                            Text(LocalizedStrings.current.next)
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(.vikingAccent.opacity(0.7))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
+                        // Right panel - Next (3 pieces) - same height as left HOLD section only
+                        VStack(spacing: 0) {
+                            VStack(spacing: 0) {
+                                Text(LocalizedStrings.current.next)
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .foregroundColor(.primaryText)
+                                    .textCase(.uppercase)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 6)
+                                    .background(Color.vikingWood.opacity(0.9))
 
-                            NextPieceView(
-                                pieces: viewModel.engine.nextPieces,
-                                blockSize: 6
+                                // Show 3 next pieces vertically
+                                VStack(spacing: 6) {
+                                    ForEach(Array(viewModel.engine.nextPieces.prefix(3).enumerated()), id: \.offset) { index, type in
+                                        NextPieceSingleView(
+                                            type: type,
+                                            blockSize: 6
+                                        )
+                                        .frame(height: 36)
+                                        .frame(maxWidth: .infinity)
+                                        .opacity(index == 0 ? 1.0 : 0.7)
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            .background(Color.boardBackground.opacity(0.6))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primaryText.opacity(0.2), lineWidth: 1)
                             )
-                            .frame(width: 45, height: 100)
-                            .background(Color.boardBackground.opacity(0.7))
-                            .cornerRadius(6)
 
                             Spacer()
                         }
-                        .frame(width: 50)
+                        .frame(width: 70)
                     }
-                    .padding(.horizontal, 8)
-
-                    Spacer()
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
 
                 // Overlays
@@ -127,137 +249,110 @@ struct GameView: View {
     // MARK: - Layout Calculation
 
     private func calculateBlockSize(geometry: GeometryProxy) -> CGFloat {
-        let topBarHeight: CGFloat = 50
-        let sidePanelWidth: CGFloat = 50
-        let horizontalPadding: CGFloat = 16
+        let topBarHeight: CGFloat = 68  // Pause button bar (centered, more space)
+        let sidePanelWidth: CGFloat = 70  // Side panels
+        let horizontalPadding: CGFloat = 48  // 16 + 16 + 8 + 8
         let verticalPadding: CGFloat = 16
+        let boardInnerPadding: CGFloat = 12
 
-        let availableHeight = geometry.size.height - topBarHeight - verticalPadding
-        let availableWidth = geometry.size.width - (sidePanelWidth * 2) - (horizontalPadding * 2)
+        let availableHeight = geometry.size.height - topBarHeight - verticalPadding - boardInnerPadding
+        let availableWidth = geometry.size.width - (sidePanelWidth * 2) - horizontalPadding
 
         let heightBased = availableHeight / 20
         let widthBased = availableWidth / 10
 
         let calculatedSize = min(heightBased, widthBased)
 
-        // Ensure valid size (positive and finite)
-        return max(1, calculatedSize.isFinite ? calculatedSize : 20)
-    }
-
-    // MARK: - UI Components
-
-    private var statsBar: some View {
-        HStack(spacing: 16) {
-            statItem(label: LocalizedStrings.current.score, value: "\(viewModel.engine.score)", color: .vikingGold)
-            Spacer()
-            statItem(label: LocalizedStrings.current.lines, value: "\(viewModel.engine.linesCleared)", color: .primaryText)
-            Spacer()
-            statItem(label: LocalizedStrings.current.tetris, value: "\(viewModel.engine.tetrisCount)", color: .vikingAccent)
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.vikingWood.opacity(0.6))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.vikingGold.opacity(0.4), lineWidth: 2)
-                )
-        )
-    }
-
-    private func statItem(label: String, value: String, color: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(label)
-                .font(.system(size: 9, weight: .bold))
-                .foregroundColor(.secondaryText)
-            Text(value)
-                .font(.system(size: 16, weight: .heavy))
-                .foregroundColor(color)
-        }
+        return max(1, calculatedSize.isFinite ? calculatedSize : 17)
     }
 
     // MARK: - Overlays
 
     private var startOverlay: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             Text(LocalizedStrings.current.appTitle)
-                .font(.system(size: 32, weight: .heavy))
+                .font(.system(size: 28, weight: .heavy))
                 .foregroundColor(.titleText)
                 .shadow(color: .titleText.opacity(0.5), radius: 10)
 
-            // Controls guide
-            VStack(alignment: .leading, spacing: 10) {
+            // Controls guide - COMPACT
+            VStack(alignment: .leading, spacing: 6) {
                 Text(LocalizedStrings.current.controls)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.titleText.opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .center)
 
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 4) {
                     controlHint(icon: "arrow.left.and.right", text: LocalizedStrings.current.swipeLeftRight)
                     controlHint(icon: "arrow.down", text: LocalizedStrings.current.swipeDown)
                     controlHint(icon: "hand.tap", text: LocalizedStrings.current.tap)
                     controlHint(icon: "hand.point.up", text: LocalizedStrings.current.longPress)
                     controlHint(icon: "hand.tap.fill", text: LocalizedStrings.current.doubleTap)
                 }
-                .padding(.horizontal)
             }
-            .padding(.vertical, 12)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
             .background(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 10)
                     .fill(Color.boardBackground.opacity(0.6))
             )
 
             Button(action: {
+                audioManager.buttonClick()
                 viewModel.startGame()
             }) {
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
                     Image(systemName: "play.fill")
+                        .frame(width: 20)
                     Text(LocalizedStrings.current.startBattle)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
-                .font(.system(size: 20, weight: .bold))
-                .foregroundColor(.primaryText)
-                .padding(.horizontal, 40)
-                .padding(.vertical, 16)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.playButtonTextColor)
+                .frame(width: 220, height: 44)
                 .background(
                     LinearGradient(
-                        colors: [.vikingGold, .vikingGold.opacity(0.7)],
+                        colors: [.playButtonColor, .playButtonColor.opacity(0.7)],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
-                .cornerRadius(25)
-                .shadow(color: .vikingGold.opacity(0.6), radius: 12)
+                .cornerRadius(20)
+                .shadow(color: .playButtonColor.opacity(0.6), radius: 8)
             }
         }
-        .padding(28)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(Color.vikingWood.opacity(0.95))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 16)
                         .stroke(
                             LinearGradient(
                                 colors: [.vikingGold, .vikingGold.opacity(0.4)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
-                            lineWidth: 3
+                            lineWidth: 2
                         )
                 )
-                .shadow(color: Color.boardBackground.opacity(0.8), radius: 20)
+                .shadow(color: Color.boardBackground.opacity(0.8), radius: 15)
         )
+        .frame(maxWidth: 320)
     }
 
     private func controlHint(icon: String, text: String) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 13))
                 .foregroundColor(.vikingAccent)
-                .frame(width: 24)
+                .frame(width: 18)
             Text(text)
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 11, weight: .regular))
                 .foregroundColor(.primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
     }
 
@@ -268,144 +363,187 @@ struct GameView: View {
                 .foregroundColor(.dangerColor)
                 .shadow(color: .dangerColor.opacity(0.5), radius: 10)
 
-            Text("\(LocalizedStrings.current.finalScore) \(viewModel.engine.score)")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.primaryText)
-
             VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    Text(LocalizedStrings.current.score)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.secondaryText)
+                    Text("\(viewModel.engine.score)")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.vikingGold)
+                }
+
+                HStack(spacing: 12) {
+                    Text(LocalizedStrings.current.lines)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.secondaryText)
+                    Text("\(viewModel.engine.linesCleared)")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.primaryText)
+                }
+            }
+
+            HStack(spacing: 16) {
                 Button(action: {
-                    viewModel.startGame()
+                    audioManager.buttonClick()
+                    dismiss()
                 }) {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text(LocalizedStrings.current.playAgain)
-                    }
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.primaryText)
-                    .frame(width: 200)
-                    .padding(.vertical, 12)
-                    .background(
-                        LinearGradient(
-                            colors: [.vikingGold, .vikingGold.opacity(0.8)],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                    Text(LocalizedStrings.current.mainMenu)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primaryText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(width: 130, height: 44)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.vikingWood.opacity(0.8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .strokeBorder(Color.primaryText.opacity(0.3), lineWidth: 1.5)
+                                )
                         )
-                    )
-                    .cornerRadius(20)
-                    .shadow(color: .vikingGold.opacity(0.4), radius: 8)
                 }
 
                 Button(action: {
-                    dismiss()
+                    audioManager.buttonClick()
+                    viewModel.startGame()
                 }) {
-                    HStack {
-                        Image(systemName: "house.fill")
-                        Text(LocalizedStrings.current.mainMenu)
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.clockwise")
+                            .frame(width: 18)
+                        Text(LocalizedStrings.current.playAgain)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.primaryText)
-                    .frame(width: 200)
-                    .padding(.vertical, 12)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.playButtonTextColor)
+                    .frame(width: 130, height: 44)
                     .background(
                         LinearGradient(
-                            colors: [.buttonGray, .buttonGray.opacity(0.8)],
+                            colors: [.playButtonColor, .playButtonColor.opacity(0.7)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(20)
+                    .cornerRadius(16)
+                    .shadow(color: .playButtonColor.opacity(0.6), radius: 6)
                 }
             }
         }
-        .padding(32)
+        .padding(24)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.vikingWood.opacity(0.95))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.dangerColor.opacity(0.6), lineWidth: 3)
+                        .stroke(
+                            LinearGradient(
+                                colors: [.dangerColor, .dangerColor.opacity(0.4)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
                 )
+                .shadow(color: Color.boardBackground.opacity(0.8), radius: 15)
         )
+        .frame(maxWidth: 320)
     }
 
     private var pauseOverlay: some View {
         VStack(spacing: 20) {
             Text(LocalizedStrings.current.paused)
-                .font(.system(size: 28, weight: .heavy))
+                .font(.system(size: 32, weight: .heavy))
                 .foregroundColor(.titleText)
+                .shadow(color: .titleText.opacity(0.5), radius: 10)
 
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
                 Button(action: {
+                    audioManager.buttonClick()
                     viewModel.resumeGame()
                 }) {
-                    HStack {
+                    HStack(spacing: 6) {
                         Image(systemName: "play.fill")
+                            .frame(width: 20)
                         Text(LocalizedStrings.current.resume)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.primaryText)
-                    .frame(width: 200)
-                    .padding(.vertical, 12)
+                    .foregroundColor(.playButtonTextColor)
+                    .frame(width: 220, height: 48)
                     .background(
                         LinearGradient(
-                            colors: [.successColor, .successColor.opacity(0.8)],
+                            colors: [.playButtonColor, .playButtonColor.opacity(0.7)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
                     .cornerRadius(20)
-                    .shadow(color: .successColor.opacity(0.4), radius: 8)
+                    .shadow(color: .playButtonColor.opacity(0.6), radius: 8)
                 }
 
                 Button(action: {
+                    audioManager.buttonClick()
                     dismiss()
                 }) {
-                    HStack {
-                        Image(systemName: "house.fill")
-                        Text(LocalizedStrings.current.mainMenu)
-                    }
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.primaryText)
-                    .frame(width: 200)
-                    .padding(.vertical, 12)
-                    .background(
-                        LinearGradient(
-                            colors: [.buttonGray, .buttonGray.opacity(0.8)],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                    Text(LocalizedStrings.current.mainMenu)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.primaryText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(width: 220, height: 48)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.vikingWood.opacity(0.8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .strokeBorder(Color.primaryText.opacity(0.3), lineWidth: 1.5)
+                                )
                         )
-                    )
-                    .cornerRadius(20)
                 }
             }
         }
-        .padding(32)
+        .padding(24)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.vikingWood.opacity(0.95))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.vikingAccent.opacity(0.6), lineWidth: 3)
+                        .stroke(
+                            LinearGradient(
+                                colors: [.vikingGold, .vikingGold.opacity(0.4)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
                 )
+                .shadow(color: Color.boardBackground.opacity(0.8), radius: 15)
         )
+        .frame(maxWidth: 280)
     }
 
-    // MARK: - Gestures (still work for swipe players)
+    // MARK: - Gestures
 
     private var dragGesture: some Gesture {
         DragGesture(minimumDistance: 20)
             .onEnded { value in
-                let horizontalMovement = value.translation.width
-                let verticalMovement = value.translation.height
+                guard viewModel.engine.state == .playing else { return }
 
-                if abs(horizontalMovement) > abs(verticalMovement) {
-                    if horizontalMovement > 0 {
+                let horizontalAmount = value.translation.width
+                let verticalAmount = value.translation.height
+
+                if abs(horizontalAmount) > abs(verticalAmount) {
+                    // Horizontal swipe
+                    if horizontalAmount > 0 {
                         viewModel.handleSwipeRight()
                     } else {
                         viewModel.handleSwipeLeft()
                     }
                 } else {
-                    if verticalMovement > 0 {
+                    // Vertical swipe
+                    if verticalAmount > 0 {
                         viewModel.handleSwipeDown()
                     }
                 }

@@ -17,15 +17,8 @@ struct BoardView: View {
 
     var body: some View {
         ZStack {
-            // Background - Viking stone floor
-            LinearGradient(
-                colors: [
-                    Color.vikingStone,
-                    Color.vikingStone.opacity(0.8)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            // Clean solid background
+            Color.boardBackground
 
             // Grid
             VStack(spacing: 0) {
@@ -37,6 +30,18 @@ struct BoardView: View {
                         }
                     }
                 }
+            }
+            .padding(6)
+
+            // Particle effects
+            if let particleEffect = ShopManager.shared.currentParticleEffect {
+                ParticleEffectView(
+                    effect: particleEffect,
+                    clearingLines: clearingLines,
+                    blockSize: blockSize,
+                    boardWidth: board.width
+                )
+                .padding(6)
             }
         }
     }
@@ -51,7 +56,7 @@ struct BoardView: View {
             // Ghost piece - semi-transparent
             if let ghostType = ghostPiece?.type {
                 BlockView(type: ghostType, size: blockSize)
-                    .opacity(0.25)
+                    .opacity(0.15)
             } else {
                 BlockView(type: nil, size: blockSize)
             }

@@ -24,6 +24,8 @@ final class GameEngine: ObservableObject {
     private var pieceGenerator = PieceGenerator()
     private var gameTimer: Timer?
     private var canHold = true  // Prevents double-hold
+    private var isAnimating = false  // Prevents new piece locks during line clear animation
+    private let audioManager = AudioManager.shared
 
     /// Ghost piece shows where current piece will land
     var ghostPiece: Tetromino? {
@@ -63,6 +65,21 @@ final class GameEngine: ObservableObject {
     func gameOver() {
         state = .gameOver
         stopTimer()
+
+        // Play game over sound
+        audioManager.gameOver()
+
+        // Award coins for the game
+        let coinsEarned = CurrencyManager.shared.awardGameCoins(
+            score: score,
+            linesCleared: linesCleared,
+            tetrisCount: tetrisCount
+        )
+
+        // Update stats
+        updateStats()
+
+        print("Game Over! Earned \(coinsEarned) coins. Total: \(CurrencyManager.shared.coins)")
     }
 
     /// Reset game state
@@ -76,6 +93,7 @@ final class GameEngine: ObservableObject {
         linesCleared = 0
         tetrisCount = 0
         canHold = true
+        isAnimating = false
     }
 
     // MARK: - Timer
@@ -128,6 +146,7 @@ final class GameEngine: ObservableObject {
         let moved = piece.movedLeft()
         if board.canPlace(moved) {
             currentPiece = moved
+            audioManager.pieceMoved()
         }
     }
 
@@ -137,6 +156,7 @@ final class GameEngine: ObservableObject {
         let moved = piece.movedRight()
         if board.canPlace(moved) {
             currentPiece = moved
+            audioManager.pieceMoved()
         }
     }
 
@@ -206,6 +226,7 @@ final class GameEngine: ObservableObject {
         let rotated = piece.rotated()
         if board.canPlace(rotated) {
             currentPiece = rotated
+            audioManager.pieceRotated()
         }
     }
 
@@ -224,12 +245,14 @@ final class GameEngine: ObservableObject {
                 heldPiece = Tetromino(type: piece.type)
                 currentPiece = newPiece
                 canHold = false
+                audioManager.pieceHeld()
             }
         } else {
             // First hold
             heldPiece = Tetromino(type: piece.type)
             spawnNewPiece()
             canHold = false
+            audioManager.pieceHeld()
         }
     }
 
@@ -238,28 +261,44 @@ final class GameEngine: ObservableObject {
     private func lockPiece() {
         guard let piece = currentPiece else { return }
 
+        // Don't lock if animation is in progress
+        guard !isAnimating else { return }
+
         // Place piece on board
         board.place(piece)
         currentPiece = nil
+
+        // Play lock sound
+        audioManager.pieceLocked()
 
         // Check for line clears
         let fullLines = board.fullLines()
 
         if !fullLines.isEmpty {
+            // Block new locks during animation
+            isAnimating = true
+
             // Mark lines for clearing animation
             clearingLines = Set(fullLines)
 
+            // Play appropriate sound based on line count
+            let lineCount = fullLines.count
+            if ScoreManager.isTetris(lineCount: lineCount) {
+                audioManager.tetris()
+            } else {
+                audioManager.lineCleared()
+            }
+
             // Animate line clear
             Task { @MainActor in
-                // Wait for animation
-                try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
+                // Wait for animation (0.6 seconds to match particle effects)
+                try? await Task.sleep(nanoseconds: 600_000_000) // 0.6 seconds
 
                 // Clear lines
                 board.clearLines(fullLines)
                 clearingLines = []
 
                 // Update stats
-                let lineCount = fullLines.count
                 linesCleared += lineCount
 
                 // Award points
@@ -270,6 +309,9 @@ final class GameEngine: ObservableObject {
                 if ScoreManager.isTetris(lineCount: lineCount) {
                     tetrisCount += 1
                 }
+
+                // Animation done
+                isAnimating = false
 
                 // Check game over
                 if board.isGameOver() {
@@ -291,5 +333,26 @@ final class GameEngine: ObservableObject {
             // Spawn next piece
             spawnNewPiece()
         }
+    }
+
+    // MARK: - Stats
+
+    /// Update game statistics
+    private func updateStats() {
+        // Get current stats
+        let currentHighScore = UserDefaults.standard.integer(forKey: "highScore")
+        let currentTotalGames = UserDefaults.standard.integer(forKey: "totalGames")
+        let currentTotalLines = UserDefaults.standard.integer(forKey: "totalLines")
+
+        // Update high score
+        if score > currentHighScore {
+            UserDefaults.standard.set(score, forKey: "highScore")
+        }
+
+        // Update total games
+        UserDefaults.standard.set(currentTotalGames + 1, forKey: "totalGames")
+
+        // Update total lines
+        UserDefaults.standard.set(currentTotalLines + linesCleared, forKey: "totalLines")
     }
 }

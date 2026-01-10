@@ -9,8 +9,10 @@ import SwiftUI
 
 /// Main menu screen
 struct MainMenuView: View {
+    @ObservedObject private var shopManager = ShopManager.shared
     @State private var showSettings = false
     @State private var showLeaderboard = false
+    @State private var showShop = false
     @State private var showGame = false
     @State private var refreshID = UUID()
 
@@ -27,15 +29,21 @@ struct MainMenuView: View {
             )
             .ignoresSafeArea()
 
+            // Falling tetromino animation
+            FallingTetrominoBackground()
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 Spacer()
                     .frame(height: 80)
 
                 // Title
                 Text(LocalizedStrings.current.appTitle)
-                    .font(.system(size: 48, weight: .heavy))
+                    .font(.system(size: 52, weight: .bold))
                     .foregroundColor(.titleText)
                     .shadow(color: .titleText.opacity(0.5), radius: 15)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
 
                 Spacer()
 
@@ -44,15 +52,26 @@ struct MainMenuView: View {
                     menuButton(
                         icon: "play.fill",
                         title: LocalizedStrings.current.play,
-                        gradient: [.vikingGold, .vikingGold.opacity(0.7)]
+                        gradient: [.playButtonColor, .playButtonColor.opacity(0.7)],
+                        textColor: .playButtonTextColor
                     ) {
                         showGame = true
                     }
 
                     menuButton(
+                        icon: "cart.fill",
+                        title: LocalizedStrings.current.shop,
+                        gradient: [.shopButtonColor, .shopButtonColor.opacity(0.7)],
+                        textColor: .shopButtonTextColor
+                    ) {
+                        showShop = true
+                    }
+
+                    menuButton(
                         icon: "chart.bar.fill",
                         title: LocalizedStrings.current.leaderboard,
-                        gradient: [.vikingAccent, .vikingAccent.opacity(0.7)]
+                        gradient: [.leaderboardButtonColor, .leaderboardButtonColor.opacity(0.7)],
+                        textColor: .leaderboardButtonTextColor
                     ) {
                         showLeaderboard = true
                     }
@@ -60,7 +79,8 @@ struct MainMenuView: View {
                     menuButton(
                         icon: "gearshape.fill",
                         title: LocalizedStrings.current.settings,
-                        gradient: [.buttonGray, .buttonGray.opacity(0.7)]
+                        gradient: [.settingsButtonColor, .settingsButtonColor.opacity(0.7)],
+                        textColor: .settingsButtonTextColor
                     ) {
                         showSettings = true
                     }
@@ -70,7 +90,7 @@ struct MainMenuView: View {
 
                 // Version info
                 Text(LocalizedStrings.current.version)
-                    .font(.system(size: 12))
+                    .font(.system(size: 13, weight: .regular))
                     .foregroundColor(.secondaryText.opacity(0.6))
                     .padding(.bottom, 12)
             }
@@ -89,27 +109,43 @@ struct MainMenuView: View {
                 refreshID = UUID()
             }
         }
+        .onChange(of: showShop) { isShowing in
+            if !isShowing {
+                // Refresh view when shop closed (theme might have changed)
+                refreshID = UUID()
+            }
+        }
         .sheet(isPresented: $showLeaderboard) {
             LeaderboardView()
         }
+        .sheet(isPresented: $showShop) {
+            ShopView()
+        }
     }
 
-    private func menuButton(icon: String, title: String, gradient: [Color], action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
+    private func menuButton(icon: String, title: String, gradient: [Color], textColor: Color, action: @escaping () -> Void) -> some View {
+        Button(action: {
+            AudioManager.shared.buttonClick()
+            action()
+        }) {
+            HStack(spacing: 16) {
                 Image(systemName: icon)
                     .font(.system(size: 24, weight: .bold))
+                    .frame(width: 32)
+
                 Text(title)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 32)
             }
-            .foregroundColor(.primaryText)
-            .padding(.horizontal, 24)
-            .frame(maxWidth: 350, minHeight: 60, maxHeight: 60)
+            .foregroundColor(textColor)
+            .padding(.horizontal, 20)
+            .frame(width: 350, height: 60)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(
@@ -122,9 +158,9 @@ struct MainMenuView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.primaryText.opacity(0.2), lineWidth: 1)
+                    .stroke(textColor.opacity(0.3), lineWidth: 1)
             )
-            .shadow(color: gradient[0].opacity(0.4), radius: 10, x: 0, y: 5)
+            .shadow(color: gradient[0].opacity(0.5), radius: 12, x: 0, y: 6)
         }
     }
 }

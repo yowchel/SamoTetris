@@ -10,6 +10,7 @@ import SwiftUI
 /// Leaderboard screen
 struct LeaderboardView: View {
     @Environment(\.dismiss) var dismiss
+    @ObservedObject private var audioManager = AudioManager.shared
     @State private var selectedTab = 0
     @AppStorage("highScore") private var highScore = 0
     @AppStorage("totalGames") private var totalGames = 0
@@ -44,10 +45,14 @@ struct LeaderboardView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizedStrings.current.done) {
+                    Button(action: {
+                        audioManager.buttonClick()
                         dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.vikingGold)
                     }
-                    .foregroundColor(.vikingGold)
                 }
             }
         }
@@ -242,7 +247,10 @@ struct LeaderboardView: View {
     }
 
     private func tabButton(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        Button(action: {
+            audioManager.buttonClick()
+            action()
+        }) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(isSelected ? .primaryText : .secondaryText)

@@ -11,8 +11,8 @@ import SwiftUI
 extension Color {
     // Get current theme from UserDefaults
     private static var currentTheme: GameTheme {
-        let themeName = UserDefaults.standard.string(forKey: "selectedTheme") ?? "Viking"
-        return GameTheme(rawValue: themeName) ?? .viking
+        let themeName = UserDefaults.standard.string(forKey: "selectedTheme") ?? "Noir"
+        return GameTheme(rawValue: themeName) ?? .noir
     }
 
     // Theme-aware UI Colors
@@ -26,6 +26,18 @@ extension Color {
     static var buttonGray: Color { currentTheme.buttonGray }
     static var successColor: Color { currentTheme.successColor }
     static var dangerColor: Color { currentTheme.dangerColor }
+
+    // Menu Button Colors
+    static var playButtonColor: Color { currentTheme.playButtonColor }
+    static var shopButtonColor: Color { currentTheme.shopButtonColor }
+    static var leaderboardButtonColor: Color { currentTheme.leaderboardButtonColor }
+    static var settingsButtonColor: Color { currentTheme.settingsButtonColor }
+
+    // Menu Button Text Colors
+    static var playButtonTextColor: Color { currentTheme.playButtonTextColor }
+    static var shopButtonTextColor: Color { currentTheme.shopButtonTextColor }
+    static var leaderboardButtonTextColor: Color { currentTheme.leaderboardButtonTextColor }
+    static var settingsButtonTextColor: Color { currentTheme.settingsButtonTextColor }
 
     // Text Colors
     static var primaryText: Color { currentTheme.primaryText }

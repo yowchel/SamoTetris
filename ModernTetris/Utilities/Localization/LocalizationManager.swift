@@ -201,8 +201,8 @@ struct LocalizedStrings {
     var hold: String {
         switch language {
         case .english: return "HOLD"
-        case .russian: return "ОТЛОЖЕНО"
-        case .french: return "RETENU"
+        case .russian: return "ЗАПАС"
+        case .french: return "RÉSERVE"
         }
     }
 
@@ -423,6 +423,209 @@ struct LocalizedStrings {
         case .english: return "Score 1000 points"
         case .russian: return "Наберите 1000 очков"
         case .french: return "Marquez 1000 points"
+        }
+    }
+
+    // MARK: - Shop
+
+    var shop: String {
+        switch language {
+        case .english: return "SHOP"
+        case .russian: return "МАГАЗИН"
+        case .french: return "BOUTIQUE"
+        }
+    }
+
+    var coins: String {
+        switch language {
+        case .english: return "Coins"
+        case .russian: return "Монет"
+        case .french: return "Pièces"
+        }
+    }
+
+    var purchase: String {
+        switch language {
+        case .english: return "Purchase"
+        case .russian: return "Купить"
+        case .french: return "Acheter"
+        }
+    }
+
+    var purchased: String {
+        switch language {
+        case .english: return "Purchased"
+        case .russian: return "Куплено"
+        case .french: return "Acheté"
+        }
+    }
+
+    var equip: String {
+        switch language {
+        case .english: return "Equip"
+        case .russian: return "Экипировать"
+        case .french: return "Équiper"
+        }
+    }
+
+    var equipped: String {
+        switch language {
+        case .english: return "Equipped"
+        case .russian: return "Экипировано"
+        case .french: return "Équipé"
+        }
+    }
+
+    var remove: String {
+        switch language {
+        case .english: return "Remove"
+        case .russian: return "Снять"
+        case .french: return "Retirer"
+        }
+    }
+
+    var notEnoughCoins: String {
+        switch language {
+        case .english: return "Not enough coins!"
+        case .russian: return "Недостаточно монет!"
+        case .french: return "Pas assez de pièces!"
+        }
+    }
+
+    var particleEffects: String {
+        switch language {
+        case .english: return "Particle Effects"
+        case .russian: return "Эффекты частиц"
+        case .french: return "Effets de particules"
+        }
+    }
+
+    var boardFrames: String {
+        switch language {
+        case .english: return "Board Frames"
+        case .russian: return "Рамки поля"
+        case .french: return "Cadres de plateau"
+        }
+    }
+
+    func particleEffectDescription(_ effect: ParticleEffect) -> String {
+        switch effect {
+        case .stars:
+            switch language {
+            case .english: return "Shimmering stars burst when clearing lines"
+            case .russian: return "Мерцающие звезды при очистке линий"
+            case .french: return "Des étoiles scintillantes apparaissent"
+            }
+        case .confetti:
+            switch language {
+            case .english: return "Colorful confetti celebrates your success"
+            case .russian: return "Цветное конфетти отмечает успех"
+            case .french: return "Des confettis colorés célèbrent"
+            }
+        case .lightning:
+            switch language {
+            case .english: return "Electric lightning strikes lines"
+            case .russian: return "Молнии бьют по линиям"
+            case .french: return "Éclairs frappent les lignes"
+            }
+        case .fire:
+            switch language {
+            case .english: return "Blazing fire burns through lines"
+            case .russian: return "Огонь сжигает линии"
+            case .french: return "Feu brûle les lignes"
+            }
+        case .hearts:
+            switch language {
+            case .english: return "Hearts float up with love"
+            case .russian: return "Сердечки взмывают вверх"
+            case .french: return "Cœurs s'envolent"
+            }
+        case .sparkles:
+            switch language {
+            case .english: return "Magical sparkles light up board"
+            case .russian: return "Искры освещают поле"
+            case .french: return "Étincelles illuminent plateau"
+            }
+        }
+    }
+
+    func boardFrameDescription(_ frame: BoardFrame) -> String {
+        switch frame {
+        case .classic:
+            switch language {
+            case .english: return "Simple elegant frame"
+            case .russian: return "Простая элегантная рамка"
+            case .french: return "Cadre élégant simple"
+            }
+        case .golden:
+            switch language {
+            case .english: return "Luxurious golden frame for champions"
+            case .russian: return "Золотая рамка для чемпионов"
+            case .french: return "Cadre doré pour champions"
+            }
+        case .neon:
+            switch language {
+            case .english: return "Vibrant neon glow around board"
+            case .russian: return "Неоновое свечение вокруг поля"
+            case .french: return "Lueur néon autour du plateau"
+            }
+        case .wooden:
+            switch language {
+            case .english: return "Classic carved wooden frame"
+            case .russian: return "Резная деревянная рамка"
+            case .french: return "Cadre en bois sculpté"
+            }
+        case .crystal:
+            switch language {
+            case .english: return "Sparkling crystal border"
+            case .russian: return "Кристаллическая граница"
+            case .french: return "Bordure en cristal"
+            }
+        }
+    }
+
+    var coinsEarned: String {
+        switch language {
+        case .english: return "Coins Earned"
+        case .russian: return "Монет заработано"
+        case .french: return "Pièces gagnées"
+        }
+    }
+
+    func themeDescription(_ theme: GameTheme) -> String {
+        switch theme {
+        case .viking:
+            switch language {
+            case .english: return "Norse saga with gold and ice blue"
+            case .russian: return "Скандинавская сага с золотом"
+            case .french: return "Saga nordique or et bleu glacé"
+            }
+        case .neon:
+            switch language {
+            case .english: return "Cyberpunk with vibrant neon colors"
+            case .russian: return "Киберпанк с неоновыми цветами"
+            case .french: return "Cyberpunk avec couleurs néon"
+            }
+        case .metal:
+            switch language {
+            case .english: return "Industrial chrome with metal shimmer"
+            case .russian: return "Индустриальный хром с блеском"
+            case .french: return "Chrome industriel métallique"
+            }
+        case .noir:
+            switch language {
+            case .english: return "Classic black and white aesthetic"
+            case .russian: return "Черно-белая эстетика"
+            case .french: return "Esthétique noir et blanc"
+            }
+        }
+    }
+
+    var themes: String {
+        switch language {
+        case .english: return "Themes"
+        case .russian: return "Темы"
+        case .french: return "Thèmes"
         }
     }
 }

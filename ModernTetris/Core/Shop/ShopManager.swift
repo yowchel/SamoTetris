@@ -13,16 +13,20 @@ class ShopManager: ObservableObject {
     @AppStorage("unlockedParticleEffects") private var unlockedParticleEffectsData: String = "[]"
     @AppStorage("unlockedBoardFrames") private var unlockedBoardFramesData: String = "[\"Classic\"]"  // Classic is free by default
     @AppStorage("unlockedThemes") private var unlockedThemesData: String = "[\"Noir\"]"  // Noir is free by default
+    @AppStorage("unlockedBackgroundAnimations") private var unlockedBackgroundAnimationsData: String = "[\"Tetromino\"]"  // Tetromino is free by default
     @AppStorage("selectedParticleEffect") private var selectedEffect: String = ""
     @AppStorage("selectedBoardFrame") private var selectedFrame: String = "Classic"  // Classic selected by default
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = "Noir"
+    @AppStorage("selectedBackgroundAnimation") private var selectedBackgroundAnim: String = "Tetromino"  // Tetromino selected by default
 
     @Published var unlockedParticleEffects: Set<ParticleEffect> = []
     @Published var unlockedBoardFrames: Set<BoardFrame> = [.classic]  // Classic is always unlocked
     @Published var unlockedThemes: Set<GameTheme> = [.noir]  // Noir is always unlocked
+    @Published var unlockedBackgroundAnimations: Set<BackgroundAnimation> = [.tetromino]  // Tetromino is always unlocked
     @Published var currentParticleEffect: ParticleEffect?
     @Published var currentBoardFrame: BoardFrame? = .classic  // Classic by default
     @Published var currentTheme: GameTheme = .noir
+    @Published var currentBackgroundAnimation: BackgroundAnimation = .tetromino  // Tetromino by default
 
     static let shared = ShopManager()
 
@@ -47,6 +51,16 @@ class ShopManager: ObservableObject {
             // Reset to Classic if current frame is not unlocked (e.g., from old version)
             selectedFrame = "Classic"
             currentBoardFrame = .classic
+        }
+
+        // Ensure Tetromino animation is selected by default if no animation is set OR if current animation is not unlocked
+        if selectedBackgroundAnim.isEmpty || selectedBackgroundAnim == "" {
+            selectedBackgroundAnim = "Tetromino"
+            currentBackgroundAnimation = .tetromino
+        } else if let animation = BackgroundAnimation(rawValue: selectedBackgroundAnim), !unlockedBackgroundAnimations.contains(animation) {
+            // Reset to Tetromino if current animation is not unlocked
+            selectedBackgroundAnim = "Tetromino"
+            currentBackgroundAnimation = .tetromino
         }
     }
 
@@ -77,6 +91,15 @@ class ShopManager: ObservableObject {
             unlockedThemes.insert(.noir)
         }
 
+        // Load background animations (Tetromino is always unlocked)
+        if let data = unlockedBackgroundAnimationsData.data(using: .utf8),
+           let animations = try? JSONDecoder().decode([String].self, from: data) {
+            unlockedBackgroundAnimations = Set(animations.compactMap { BackgroundAnimation(rawValue: $0) })
+        }
+        if !unlockedBackgroundAnimations.contains(.tetromino) {
+            unlockedBackgroundAnimations.insert(.tetromino)
+        }
+
         // Load selected items
         if let effect = ParticleEffect(rawValue: selectedEffect) {
             currentParticleEffect = effect
@@ -86,6 +109,9 @@ class ShopManager: ObservableObject {
         }
         if let theme = GameTheme(rawValue: selectedThemeRaw) {
             currentTheme = theme
+        }
+        if let animation = BackgroundAnimation(rawValue: selectedBackgroundAnim) {
+            currentBackgroundAnimation = animation
         }
     }
 
@@ -109,6 +135,13 @@ class ShopManager: ObservableObject {
         if let data = try? JSONEncoder().encode(themesArray),
            let string = String(data: data, encoding: .utf8) {
             unlockedThemesData = string
+        }
+
+        // Save background animations
+        let animationsArray = Array(unlockedBackgroundAnimations.map { $0.rawValue })
+        if let data = try? JSONEncoder().encode(animationsArray),
+           let string = String(data: data, encoding: .utf8) {
+            unlockedBackgroundAnimationsData = string
         }
     }
 
@@ -152,6 +185,19 @@ class ShopManager: ObservableObject {
         return false
     }
 
+    /// Try to purchase a background animation
+    func purchaseBackgroundAnimation(_ animation: BackgroundAnimation) -> Bool {
+        guard !unlockedBackgroundAnimations.contains(animation) else { return false }
+        guard !animation.isFree else { return false }  // Can't purchase free animations
+
+        if CurrencyManager.shared.spendCoins(animation.price) {
+            unlockedBackgroundAnimations.insert(animation)
+            saveUnlockedItems()
+            return true
+        }
+        return false
+    }
+
     // MARK: - Selection
 
     /// Select a particle effect
@@ -176,6 +222,16 @@ class ShopManager: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Select a background animation
+    func selectBackgroundAnimation(_ animation: BackgroundAnimation) {
+        guard unlockedBackgroundAnimations.contains(animation) else { return }
+        currentBackgroundAnimation = animation
+        selectedBackgroundAnim = animation.rawValue
+
+        // Force UI refresh by triggering objectWillChange
+        objectWillChange.send()
+    }
+
     // MARK: - Check ownership
 
     func isUnlocked(_ effect: ParticleEffect) -> Bool {
@@ -188,6 +244,10 @@ class ShopManager: ObservableObject {
 
     func isUnlocked(_ theme: GameTheme) -> Bool {
         return unlockedThemes.contains(theme)
+    }
+
+    func isUnlocked(_ animation: BackgroundAnimation) -> Bool {
+        return unlockedBackgroundAnimations.contains(animation)
     }
 
     // MARK: - Get all shop items
@@ -234,6 +294,20 @@ class ShopManager: ObservableObject {
                 icon: frame.icon,
                 isPremium: false,
                 frameStyle: frame
+            ))
+        }
+
+        // Background animations (only paid ones in shop)
+        for animation in BackgroundAnimation.allCases.filter({ !$0.isFree }) {
+            items.append(ShopItem(
+                id: "animation_\(animation.rawValue)",
+                type: .backgroundAnimation,
+                name: LocalizedStrings.current.backgroundAnimationName(animation),
+                description: LocalizedStrings.current.backgroundAnimationDescription(animation),
+                price: animation.price,
+                icon: animation.icon,
+                isPremium: false,
+                backgroundAnimation: animation
             ))
         }
 

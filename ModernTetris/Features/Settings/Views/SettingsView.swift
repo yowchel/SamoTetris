@@ -140,7 +140,7 @@ struct SettingsView: View {
     private func settingsSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.vikingGold.opacity(0.8))
                 .padding(.leading, 4)
 
@@ -162,7 +162,7 @@ struct SettingsView: View {
                 .frame(width: 28)
 
             Text(title)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundColor(.primaryText)
 
             Spacer()
@@ -182,13 +182,13 @@ struct SettingsView: View {
                 .frame(width: 28)
 
             Text(title)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundColor(.primaryText)
 
             Spacer()
 
             Text(value)
-                .font(.system(size: 14))
+                .font(.system(size: 16))
                 .foregroundColor(.secondaryText)
         }
         .padding(.horizontal, 16)
@@ -235,8 +235,8 @@ struct SettingsView: View {
                             }) {
                                 HStack {
                                     Text(item.0)
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.primaryText)
+                                        .font(.system(size: 18, weight: selectedValue.wrappedValue == item.1 ? .semibold : .regular))
+                                        .foregroundColor(selectedValue.wrappedValue == item.1 ? .primaryText : .secondaryText)
 
                                     Spacer()
 

@@ -76,10 +76,11 @@ struct ShopView: View {
                     .padding()
 
                     // Category tabs
-                    HStack(spacing: 0) {
+                    HStack(spacing: 8) {
                         categoryTab(title: LocalizedStrings.current.themes, index: 0)
                         categoryTab(title: LocalizedStrings.current.particleEffects, index: 1)
                         categoryTab(title: LocalizedStrings.current.boardFrames, index: 2)
+                        categoryTab(title: LocalizedStrings.current.backgrounds, index: 3)
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 8)
@@ -95,9 +96,13 @@ struct ShopView: View {
                                 ForEach(ParticleEffect.allCases, id: \.self) { effect in
                                     particleEffectCard(effect)
                                 }
-                            } else {
+                            } else if selectedCategory == 2 {
                                 ForEach(BoardFrame.allCases, id: \.self) { frame in
                                     boardFrameCard(frame)
+                                }
+                            } else if selectedCategory == 3 {
+                                ForEach(BackgroundAnimation.allCases, id: \.self) { animation in
+                                    backgroundAnimationCard(animation)
                                 }
                             }
                         }
@@ -121,27 +126,38 @@ struct ShopView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .alert(purchaseMessage, isPresented: $showPurchaseAlert) {
-            Button("OK", role: .cancel) { }
-        }
+        .customAlert(isPresented: $showPurchaseAlert, message: purchaseMessage)
     }
 
     // MARK: - Category Tab
 
     private func categoryTab(title: String, index: Int) -> some View {
-        Button(action: {
+        let isSelected = selectedCategory == index
+        let currentTheme = shopManager.currentTheme
+
+        return Button(action: {
             audioManager.buttonClick()
             selectedCategory = index
         }) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundColor(selectedCategory == index ? .primaryText : .secondaryText)
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundColor(isSelected ? currentTheme.primaryText : currentTheme.secondaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+                .frame(height: 52)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(selectedCategory == index ? Color.vikingGold.opacity(0.3) : Color.clear)
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isSelected ? currentTheme.primaryAccent.opacity(0.25) : currentTheme.wood.opacity(0.3))
                 )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(isSelected ? currentTheme.primaryAccent.opacity(0.6) : currentTheme.secondaryText.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+                )
+                .shadow(color: isSelected ? currentTheme.primaryAccent.opacity(0.3) : Color.clear, radius: isSelected ? 4 : 0)
         }
     }
 
@@ -152,27 +168,25 @@ struct ShopView: View {
         let isEquipped = shopManager.currentParticleEffect == effect
 
         return VStack(spacing: 10) {
-            // Icon
+            // Icon - Custom effect preview
             ZStack {
                 Circle()
                     .fill(isUnlocked ? Color.vikingGold.opacity(0.2) : Color.vikingWood.opacity(0.3))
                     .frame(width: 70, height: 70)
 
-                Image(systemName: effect.icon)
-                    .font(.system(size: 32))
-                    .foregroundColor(isUnlocked ? .vikingGold : .secondaryText)
+                effect.iconView
             }
 
             // Name
             Text(effect.rawValue)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.primaryText)
                 .lineLimit(1)
                 .frame(height: 20)
 
             // Description
             Text(LocalizedStrings.current.particleEffectDescription(effect))
-                .font(.system(size: 11))
+                .font(.system(size: 13))
                 .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -189,7 +203,7 @@ struct ShopView: View {
                         shopManager.selectParticleEffect(nil)  // Unequip effect
                     }) {
                         Text(LocalizedStrings.current.remove)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.dangerColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -206,7 +220,7 @@ struct ShopView: View {
                         shopManager.selectParticleEffect(effect)
                     }) {
                         Text(LocalizedStrings.current.equip)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.playButtonTextColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -232,7 +246,7 @@ struct ShopView: View {
                                     .foregroundColor(.vikingGold)
                             }
                             Text("\(effect.price)")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.playButtonTextColor)
                         .frame(height: 36)
@@ -264,27 +278,25 @@ struct ShopView: View {
         let isEquipped = shopManager.currentBoardFrame == frame
 
         return VStack(spacing: 10) {
-            // Icon
+            // Icon - Custom frame preview
             ZStack {
                 Circle()
                     .fill(isUnlocked ? Color.vikingAccent.opacity(0.2) : Color.vikingWood.opacity(0.3))
                     .frame(width: 70, height: 70)
 
-                Image(systemName: frame.icon)
-                    .font(.system(size: 32))
-                    .foregroundColor(isUnlocked ? .vikingAccent : .secondaryText)
+                frame.iconView
             }
 
             // Name
             Text(frame.rawValue)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.primaryText)
                 .lineLimit(1)
                 .frame(height: 20)
 
             // Description
             Text(LocalizedStrings.current.boardFrameDescription(frame))
-                .font(.system(size: 11))
+                .font(.system(size: 13))
                 .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -301,7 +313,7 @@ struct ShopView: View {
                         shopManager.selectBoardFrame(nil)  // Unequip frame
                     }) {
                         Text(LocalizedStrings.current.remove)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.dangerColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -318,7 +330,7 @@ struct ShopView: View {
                         shopManager.selectBoardFrame(frame)
                     }) {
                         Text(LocalizedStrings.current.equip)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.playButtonTextColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -344,7 +356,7 @@ struct ShopView: View {
                                     .foregroundColor(.vikingGold)
                             }
                             Text("\(frame.price)")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.playButtonTextColor)
                         .frame(height: 36)
@@ -376,27 +388,25 @@ struct ShopView: View {
         let isEquipped = shopManager.currentTheme == theme
 
         return VStack(spacing: 10) {
-            // Icon
+            // Icon - Custom theme preview
             ZStack {
                 Circle()
                     .fill(isUnlocked ? theme.primaryAccent.opacity(0.2) : Color.vikingWood.opacity(0.3))
                     .frame(width: 70, height: 70)
 
-                Image(systemName: theme.icon)
-                    .font(.system(size: 32))
-                    .foregroundColor(isUnlocked ? theme.primaryAccent : .secondaryText)
+                theme.iconView
             }
 
             // Name
             Text(theme.displayName)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.primaryText)
                 .lineLimit(1)
                 .frame(height: 20)
 
             // Description
             Text(LocalizedStrings.current.themeDescription(theme))
-                .font(.system(size: 11))
+                .font(.system(size: 13))
                 .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -409,7 +419,7 @@ struct ShopView: View {
             Group {
                 if isEquipped {
                     Text(LocalizedStrings.current.equipped)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.successColor)
                         .frame(height: 36)
                         .frame(maxWidth: .infinity)
@@ -423,7 +433,7 @@ struct ShopView: View {
                         shopManager.selectTheme(theme)
                     }) {
                         Text(LocalizedStrings.current.equip)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.playButtonTextColor)
                             .frame(height: 36)
                             .frame(maxWidth: .infinity)
@@ -447,7 +457,7 @@ struct ShopView: View {
                                     .foregroundColor(.vikingGold)
                             }
                             Text("\(theme.price)")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.playButtonTextColor)
                         .frame(height: 36)
@@ -468,6 +478,116 @@ struct ShopView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(isEquipped ? Color.successColor : theme.primaryAccent.opacity(isUnlocked ? 0.4 : 0.2), lineWidth: 2)
+                )
+        )
+    }
+
+    // MARK: - Background Animation Card
+
+    private func backgroundAnimationCard(_ animation: BackgroundAnimation) -> some View {
+        let isUnlocked = shopManager.isUnlocked(animation)
+        let isEquipped = shopManager.currentBackgroundAnimation == animation
+
+        return VStack(spacing: 10) {
+            // Icon - Custom background animation preview
+            ZStack {
+                Circle()
+                    .fill(isUnlocked ? Color.vikingAccent.opacity(0.2) : Color.vikingWood.opacity(0.3))
+                    .frame(width: 70, height: 70)
+
+                animation.iconView
+            }
+
+            // Name
+            Text(animation.rawValue)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundColor(.primaryText)
+                .lineLimit(1)
+                .frame(height: 20)
+
+            // Description
+            Text(LocalizedStrings.current.backgroundAnimationDescription(animation))
+                .font(.system(size: 13))
+                .foregroundColor(.secondaryText)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .frame(height: 36)
+
+            Spacer()
+
+            // Button
+            Group {
+                if isEquipped {
+                    Button(action: {
+                        // Can't unequip - always need one animation
+                    }) {
+                        Text(LocalizedStrings.current.equipped)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.successColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(height: 36)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.successColor.opacity(0.2))
+                            )
+                    }
+                    .disabled(true)
+                } else if isUnlocked {
+                    Button(action: {
+                        audioManager.buttonClick()
+                        shopManager.selectBackgroundAnimation(animation)
+                    }) {
+                        Text(LocalizedStrings.current.equip)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.playButtonTextColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(height: 36)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.playButtonColor)
+                            )
+                    }
+                } else {
+                    Button(action: {
+                        audioManager.buttonClick()
+                        purchaseBackgroundAnimation(animation)
+                    }) {
+                        HStack(spacing: 5) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.playButtonTextColor.opacity(0.3))
+                                    .frame(width: 18, height: 18)
+                                Text("S")
+                                    .font(.system(size: 11, weight: .black))
+                                    .foregroundColor(.vikingGold)
+                            }
+                            Text("\(animation.price)")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                        .foregroundColor(.playButtonTextColor)
+                        .frame(height: 36)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.vikingGold)
+                        )
+                    }
+                }
+            }
+        }
+        .frame(height: 240)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.vikingWood.opacity(isUnlocked ? 0.6 : 0.4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isEquipped ? Color.successColor : Color.vikingGold.opacity(isUnlocked ? 0.4 : 0.2), lineWidth: 2)
                 )
         )
     }
@@ -496,6 +616,16 @@ struct ShopView: View {
 
     private func purchaseBoardFrame(_ frame: BoardFrame) {
         if shopManager.purchaseBoardFrame(frame) {
+            purchaseMessage = LocalizedStrings.current.purchased
+            showPurchaseAlert = true
+        } else {
+            purchaseMessage = LocalizedStrings.current.notEnoughCoins
+            showPurchaseAlert = true
+        }
+    }
+
+    private func purchaseBackgroundAnimation(_ animation: BackgroundAnimation) {
+        if shopManager.purchaseBackgroundAnimation(animation) {
             purchaseMessage = LocalizedStrings.current.purchased
             showPurchaseAlert = true
         } else {

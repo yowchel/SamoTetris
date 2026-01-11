@@ -37,16 +37,16 @@ class CurrencyManager: ObservableObject {
     func calculateCoinsEarned(score: Int, linesCleared: Int, tetrisCount: Int) -> Int {
         var coinsEarned = 0
 
-        // Base coins from score
-        coinsEarned += score / 10
+        // Base coins from score (improved: was /10, now /8 = +25% more coins)
+        coinsEarned += score / 8
 
-        // Bonus for lines cleared
-        coinsEarned += linesCleared * 5
+        // Bonus for lines cleared (improved: was x5, now x8 = +60% per line)
+        coinsEarned += linesCleared * 8
 
-        // Extra bonus for Tetris (4 lines at once)
-        coinsEarned += tetrisCount * 50
+        // Extra bonus for Tetris (improved: was x50, now x100 = double reward)
+        coinsEarned += tetrisCount * 100
 
-        return max(10, coinsEarned) // Minimum 10 coins per game
+        return max(15, coinsEarned) // Minimum 15 coins per game (was 10)
     }
 
     /// Award coins after a game

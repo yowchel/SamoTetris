@@ -13,6 +13,8 @@ enum GameTheme: String, CaseIterable, Hashable {
     case neon = "Neon"
     case metal = "Metal"
     case noir = "Noir"
+    case sunset = "Sunset"
+    case ocean = "Ocean"
 
     var displayName: String {
         return self.rawValue
@@ -28,6 +30,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.05, green: 0.05, blue: 0.12)
         case .metal: return Color(red: 0.08, green: 0.1, blue: 0.12)  // Dark chrome gray
         case .noir: return Color(red: 0.08, green: 0.08, blue: 0.08)
+        case .sunset: return Color(red: 0.15, green: 0.08, blue: 0.12)  // Deep purple-red dusk
+        case .ocean: return Color(red: 0.05, green: 0.1, blue: 0.15)   // Deep ocean blue
         }
     }
 
@@ -37,6 +41,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.1, green: 0.1, blue: 0.2)
         case .metal: return Color(red: 0.55, green: 0.6, blue: 0.65)  // Brushed steel
         case .noir: return Color(red: 0.18, green: 0.18, blue: 0.18)
+        case .sunset: return Color(red: 0.4, green: 0.22, blue: 0.25)  // Warm dusk wood
+        case .ocean: return Color(red: 0.15, green: 0.25, blue: 0.35)  // Deep sea teal
         }
     }
 
@@ -46,6 +52,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.08, green: 0.08, blue: 0.15)
         case .metal: return Color(red: 0.35, green: 0.38, blue: 0.42)  // Polished chrome
         case .noir: return Color(red: 0.22, green: 0.22, blue: 0.22)
+        case .sunset: return Color(red: 0.3, green: 0.18, blue: 0.22)  // Rose quartz
+        case .ocean: return Color(red: 0.18, green: 0.28, blue: 0.32)  // Seafoam stone
         }
     }
 
@@ -55,6 +63,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 1.0, blue: 0.8)     // Cyan
         case .metal: return Color(red: 0.75, green: 0.85, blue: 0.95) // Chrome silver
         case .noir: return Color(red: 0.9, green: 0.9, blue: 0.9)     // White
+        case .sunset: return Color(red: 1.0, green: 0.6, blue: 0.2)  // Sunset orange
+        case .ocean: return Color(red: 0.2, green: 0.85, blue: 0.85)  // Aqua turquoise
         }
     }
 
@@ -64,6 +74,8 @@ extension GameTheme {
         case .neon: return Color(red: 1.0, green: 0.0, blue: 0.8)     // Magenta
         case .metal: return Color(red: 0.5, green: 0.75, blue: 0.9)   // Steel blue shine
         case .noir: return Color(red: 0.7, green: 0.7, blue: 0.7)     // Light Gray
+        case .sunset: return Color(red: 1.0, green: 0.4, blue: 0.75)  // Pink-purple sky
+        case .ocean: return Color(red: 1.0, green: 0.55, blue: 0.35)  // Coral reef orange
         }
     }
 
@@ -74,6 +86,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.2, green: 0.2, blue: 0.4)
         case .metal: return Color(red: 0.45, green: 0.5, blue: 0.55)   // Brushed aluminum
         case .noir: return Color(red: 0.35, green: 0.35, blue: 0.35)
+        case .sunset: return Color(red: 0.5, green: 0.35, blue: 0.4)
+        case .ocean: return Color(red: 0.3, green: 0.45, blue: 0.5)
         }
     }
 
@@ -84,6 +98,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 1.0, blue: 0.8)      // Electric cyan
         case .metal: return Color(red: 0.75, green: 0.85, blue: 0.95)  // Chrome silver
         case .noir: return Color(red: 0.9, green: 0.9, blue: 0.9)      // White
+        case .sunset: return Color(red: 1.0, green: 0.5, blue: 0.6)  // Coral pink
+        case .ocean: return Color(red: 0.3, green: 0.9, blue: 0.7)   // Seafoam green
         }
     }
 
@@ -93,6 +109,8 @@ extension GameTheme {
         case .neon: return Color(red: 1.0, green: 0.85, blue: 0.0)     // Electric yellow/gold
         case .metal: return Color(red: 1.0, green: 0.85, blue: 0.4)    // Polished gold
         case .noir: return Color(red: 0.5, green: 0.5, blue: 0.5)      // Medium Gray
+        case .sunset: return Color(red: 1.0, green: 0.8, blue: 0.3)  // Golden hour
+        case .ocean: return Color(red: 0.95, green: 0.9, blue: 0.65)  // Pearl/sand
         }
     }
 
@@ -102,6 +120,8 @@ extension GameTheme {
         case .neon: return Color(red: 1.0, green: 0.0, blue: 0.8)      // Hot Magenta
         case .metal: return Color(red: 0.5, green: 0.75, blue: 0.9)    // Steel blue
         case .noir: return Color(red: 0.7, green: 0.7, blue: 0.7)      // Light Gray
+        case .sunset: return Color(red: 0.75, green: 0.5, blue: 0.95)  // Lavender
+        case .ocean: return Color(red: 0.15, green: 0.75, blue: 0.95)  // Deep cyan
         }
     }
 
@@ -111,44 +131,26 @@ extension GameTheme {
         case .neon: return Color(red: 0.6, green: 0.2, blue: 1.0)      // Electric purple
         case .metal: return Color(red: 0.55, green: 0.6, blue: 0.65)   // Brushed steel
         case .noir: return Color(red: 0.4, green: 0.4, blue: 0.4)      // Dark Gray
+        case .sunset: return Color(red: 0.55, green: 0.3, blue: 0.6)  // Deep plum
+        case .ocean: return Color(red: 0.2, green: 0.4, blue: 0.65)   // Navy blue
         }
     }
 
-    // Button text colors - HIGH CONTRAST
+    // Button text colors - always white for main menu
     var playButtonTextColor: Color {
-        switch self {
-        case .viking: return Color(red: 0.05, green: 0.08, blue: 0.05)  // Very dark on green
-        case .neon: return Color(red: 0.0, green: 0.05, blue: 0.1)      // Very dark on cyan
-        case .metal: return Color(red: 0.05, green: 0.06, blue: 0.08)   // Very dark on chrome
-        case .noir: return Color(red: 0.05, green: 0.05, blue: 0.05)    // Very dark on white
-        }
+        return Color(red: 1.0, green: 1.0, blue: 1.0)  // Always white
     }
 
     var shopButtonTextColor: Color {
-        switch self {
-        case .viking: return Color(red: 0.05, green: 0.04, blue: 0.08)  // Very dark on gold
-        case .neon: return Color(red: 0.0, green: 0.05, blue: 0.1)      // Very dark on yellow
-        case .metal: return Color(red: 0.05, green: 0.04, blue: 0.08)   // Very dark on gold
-        case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white on gray
-        }
+        return Color(red: 1.0, green: 1.0, blue: 1.0)  // Always white
     }
 
     var leaderboardButtonTextColor: Color {
-        switch self {
-        case .viking: return Color(red: 1.0, green: 1.0, blue: 1.0)     // Pure white on blue
-        case .neon: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white on magenta
-        case .metal: return Color(red: 1.0, green: 1.0, blue: 1.0)      // Pure white on steel
-        case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white on gray
-        }
+        return Color(red: 1.0, green: 1.0, blue: 1.0)  // Always white
     }
 
     var settingsButtonTextColor: Color {
-        switch self {
-        case .viking: return Color(red: 1.0, green: 1.0, blue: 1.0)     // Pure white on purple
-        case .neon: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white on purple
-        case .metal: return Color(red: 1.0, green: 1.0, blue: 1.0)      // Pure white on steel
-        case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white on dark
-        }
+        return Color(red: 1.0, green: 1.0, blue: 1.0)  // Always white
     }
 
     var successColor: Color {
@@ -157,6 +159,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 1.0, blue: 0.5)      // Electric Green
         case .metal: return Color(red: 0.4, green: 0.75, blue: 0.65)   // Chrome green
         case .noir: return Color(red: 0.6, green: 0.6, blue: 0.6)      // Gray
+        case .sunset: return Color(red: 1.0, green: 0.7, blue: 0.4)  // Warm orange-gold
+        case .ocean: return Color(red: 0.3, green: 0.85, blue: 0.7)  // Aqua green
         }
     }
 
@@ -166,6 +170,8 @@ extension GameTheme {
         case .neon: return Color(red: 1.0, green: 0.1, blue: 0.4)      // Hot Pink
         case .metal: return Color(red: 0.85, green: 0.35, blue: 0.35)  // Metallic red
         case .noir: return Color(red: 0.5, green: 0.5, blue: 0.5)      // Dark Gray
+        case .sunset: return Color(red: 1.0, green: 0.3, blue: 0.4)  // Sunset red
+        case .ocean: return Color(red: 0.9, green: 0.4, blue: 0.35)  // Coral red
         }
     }
 
@@ -176,15 +182,19 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 1.0, blue: 0.95)      // Bright Cyan
         case .metal: return Color(red: 1.0, green: 1.0, blue: 1.0)      // Pure white
         case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white
+        case .sunset: return Color(red: 1.0, green: 1.0, blue: 1.0)     // Pure white
+        case .ocean: return Color(red: 1.0, green: 1.0, blue: 1.0)      // Pure white
         }
     }
 
     var secondaryText: Color {
         switch self {
         case .viking: return Color(red: 0.85, green: 0.85, blue: 0.9)   // Light gray
-        case .neon: return Color(red: 1.0, green: 0.5, blue: 1.0)       // Bright Magenta
+        case .neon: return Color(red: 0.9, green: 0.6, blue: 0.95)      // Softer Magenta (reduced brightness for better readability)
         case .metal: return Color(red: 0.85, green: 0.9, blue: 0.95)    // Light steel
         case .noir: return Color(red: 0.85, green: 0.85, blue: 0.85)    // Light gray
+        case .sunset: return Color(red: 1.0, green: 0.85, blue: 0.9)   // Warm light pink
+        case .ocean: return Color(red: 0.8, green: 0.95, blue: 1.0)    // Light cyan
         }
     }
 
@@ -194,6 +204,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 1.0, blue: 1.0)       // Electric Cyan
         case .metal: return Color(red: 1.0, green: 1.0, blue: 1.0)      // Pure white
         case .noir: return Color(red: 1.0, green: 1.0, blue: 1.0)       // Pure white
+        case .sunset: return Color(red: 1.0, green: 0.85, blue: 0.3)     // Golden sunset
+        case .ocean: return Color(red: 0.4, green: 0.95, blue: 1.0)      // Bright aqua
         }
     }
 
@@ -240,6 +252,26 @@ extension GameTheme {
             case .j: return Color(red: 0.4, green: 0.4, blue: 0.4)    // Charcoal
             case .l: return Color(red: 0.25, green: 0.25, blue: 0.25) // Deep Gray
             }
+        case .sunset:
+            switch type {
+            case .i: return Color(red: 0.4, green: 0.7, blue: 1.0)    // Sky blue
+            case .o: return Color(red: 1.0, green: 0.75, blue: 0.2)   // Warm golden
+            case .t: return Color(red: 1.0, green: 0.4, blue: 0.7)    // Pink-purple
+            case .s: return Color(red: 1.0, green: 0.9, blue: 0.3)    // Sunrise yellow
+            case .z: return Color(red: 1.0, green: 0.35, blue: 0.3)   // Sunset red
+            case .j: return Color(red: 0.65, green: 0.45, blue: 1.0)  // Lavender purple
+            case .l: return Color(red: 1.0, green: 0.6, blue: 0.25)   // Sunset orange
+            }
+        case .ocean:
+            switch type {
+            case .i: return Color(red: 0.2, green: 0.8, blue: 1.0)    // Bright cyan
+            case .o: return Color(red: 1.0, green: 0.85, blue: 0.5)   // Sand/pearl
+            case .t: return Color(red: 0.3, green: 0.9, blue: 0.8)    // Turquoise
+            case .s: return Color(red: 0.4, green: 1.0, blue: 0.6)    // Sea green
+            case .z: return Color(red: 1.0, green: 0.5, blue: 0.35)   // Coral orange
+            case .j: return Color(red: 0.2, green: 0.65, blue: 0.95)  // Deep sea blue
+            case .l: return Color(red: 1.0, green: 0.75, blue: 0.3)   // Starfish yellow
+            }
         }
     }
 
@@ -250,6 +282,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.02, green: 0.02, blue: 0.08)
         case .metal: return Color(red: 0.1, green: 0.12, blue: 0.14)   // Dark chrome
         case .noir: return Color(red: 0.05, green: 0.05, blue: 0.05)
+        case .sunset: return Color(red: 0.1, green: 0.05, blue: 0.08)
+        case .ocean: return Color(red: 0.03, green: 0.08, blue: 0.12)
         }
     }
 
@@ -259,6 +293,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.0, green: 0.8, blue: 0.8, opacity: 0.2)
         case .metal: return Color(red: 0.6, green: 0.7, blue: 0.8, opacity: 0.4)  // Shiny chrome border
         case .noir: return Color(white: 0.3, opacity: 0.4)
+        case .sunset: return Color(red: 1.0, green: 0.6, blue: 0.5, opacity: 0.25)
+        case .ocean: return Color(red: 0.3, green: 0.8, blue: 0.9, opacity: 0.3)
         }
     }
 
@@ -268,6 +304,8 @@ extension GameTheme {
         case .neon: return Color(red: 0.02, green: 0.02, blue: 0.08, opacity: 0.2)
         case .metal: return Color(red: 0.18, green: 0.2, blue: 0.22, opacity: 0.2)
         case .noir: return Color(white: 0.06, opacity: 0.2)
+        case .sunset: return Color(red: 0.15, green: 0.08, blue: 0.1, opacity: 0.2)
+        case .ocean: return Color(red: 0.05, green: 0.1, blue: 0.15, opacity: 0.2)
         }
     }
 }

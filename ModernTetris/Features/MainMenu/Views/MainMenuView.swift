@@ -29,9 +29,18 @@ struct MainMenuView: View {
             )
             .ignoresSafeArea()
 
-            // Falling tetromino animation
-            FallingTetrominoBackground()
-                .ignoresSafeArea()
+            // Background animation based on selected type
+            Group {
+                switch shopManager.currentBackgroundAnimation {
+                case .tetromino:
+                    FallingTetrominoBackground()
+                case .bubbles:
+                    BubblesBackground()
+                case .particles:
+                    ParticlesBackground()
+                }
+            }
+            .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
@@ -91,7 +100,7 @@ struct MainMenuView: View {
                 // Version info
                 Text(LocalizedStrings.current.version)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.secondaryText.opacity(0.6))
+                    .foregroundColor(.secondaryText.opacity(0.75))
                     .padding(.bottom, 12)
             }
             .padding()
@@ -134,7 +143,7 @@ struct MainMenuView: View {
                     .frame(width: 32)
 
                 Text(title)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .multilineTextAlignment(.center)
@@ -147,20 +156,14 @@ struct MainMenuView: View {
             .padding(.horizontal, 20)
             .frame(width: 350, height: 60)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(
-                        LinearGradient(
-                            colors: gradient,
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                LinearGradient(
+                    colors: gradient,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(textColor.opacity(0.3), lineWidth: 1)
-            )
-            .shadow(color: gradient[0].opacity(0.5), radius: 12, x: 0, y: 6)
+            .cornerRadius(16)
+            .shadow(color: gradient[0].opacity(0.4), radius: 20, x: 0, y: 10)
         }
     }
 }

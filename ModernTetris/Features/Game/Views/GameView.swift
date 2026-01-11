@@ -20,10 +20,19 @@ struct GameView: View {
                 // Background
                 Color.vikingBackground.ignoresSafeArea()
 
-                // Falling tetromino animation - more pieces for game screen
-                FallingTetrominoBackground(isGameScreen: true)
-                    .ignoresSafeArea()
-                    .opacity(0.3)
+                // Background animation based on selected type - more pieces for game screen
+                Group {
+                    switch shopManager.currentBackgroundAnimation {
+                    case .tetromino:
+                        FallingTetrominoBackground(isGameScreen: true)
+                    case .bubbles:
+                        BubblesBackground(isGameScreen: true)
+                    case .particles:
+                        ParticlesBackground(isGameScreen: true)
+                    }
+                }
+                .ignoresSafeArea()
+                .opacity(0.3)
 
                 VStack(spacing: 0) {
                     // Top bar with Pause button (44x44 Apple standard) - centered
@@ -58,7 +67,7 @@ struct GameView: View {
                             // HOLD section
                             VStack(spacing: 0) {
                                 Text(LocalizedStrings.current.hold)
-                                    .font(.system(size: 11, weight: .heavy))
+                                    .font(.system(size: 12, weight: .heavy))
                                     .foregroundColor(.primaryText)
                                     .textCase(.uppercase)
                                     .frame(maxWidth: .infinity)
@@ -85,14 +94,14 @@ struct GameView: View {
                             // SCORE section
                             VStack(spacing: 4) {
                                 Text(LocalizedStrings.current.score)
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(.system(size: 11, weight: .semibold))
                                     .foregroundColor(.secondaryText)
                                     .textCase(.uppercase)
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 6)
 
                                 Text("\(viewModel.engine.score)")
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.vikingGold)
                                     .frame(maxWidth: .infinity)
                                     .padding(.bottom, 6)
@@ -109,14 +118,14 @@ struct GameView: View {
                             // TETRIS section
                             VStack(spacing: 4) {
                                 Text(LocalizedStrings.current.tetris)
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(.system(size: 11, weight: .semibold))
                                     .foregroundColor(.secondaryText)
                                     .textCase(.uppercase)
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 6)
 
                                 Text("\(viewModel.engine.tetrisCount)")
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.dangerColor)
                                     .frame(maxWidth: .infinity)
                                     .padding(.bottom, 6)
@@ -133,14 +142,14 @@ struct GameView: View {
                             // LINES section
                             VStack(spacing: 4) {
                                 Text(LocalizedStrings.current.lines)
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(.system(size: 11, weight: .semibold))
                                     .foregroundColor(.secondaryText)
                                     .textCase(.uppercase)
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 6)
 
                                 Text("\(viewModel.engine.linesCleared)")
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.primaryText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.bottom, 6)
@@ -167,9 +176,7 @@ struct GameView: View {
                             .overlay(
                                 Group {
                                     if let frame = shopManager.currentBoardFrame {
-                                        Rectangle()
-                                            .strokeBorder(frame.frameColor, lineWidth: frame.lineWidth)
-                                            .shadow(color: frame.glowColor.opacity(0.5), radius: 6)
+                                        AnimatedBoardFrame(frame: frame)
                                     }
                                 }
                             )
@@ -186,16 +193,15 @@ struct GameView: View {
                         }
                         .onLongPressGesture(minimumDuration: 0.3) {
                             if viewModel.engine.state == .playing {
-                                viewModel.handleLongPress()
+                                viewModel.handleDoubleTap()  // Long press now does HOLD instead of hard drop
                             }
                         }
-                        .simultaneousGesture(doubleTapGesture)
 
                         // Right panel - Next (3 pieces) - same height as left HOLD section only
                         VStack(spacing: 0) {
                             VStack(spacing: 0) {
                                 Text(LocalizedStrings.current.next)
-                                    .font(.system(size: 11, weight: .heavy))
+                                    .font(.system(size: 12, weight: .heavy))
                                     .foregroundColor(.primaryText)
                                     .textCase(.uppercase)
                                     .frame(maxWidth: .infinity)
@@ -287,7 +293,6 @@ struct GameView: View {
                     controlHint(icon: "arrow.down", text: LocalizedStrings.current.swipeDown)
                     controlHint(icon: "hand.tap", text: LocalizedStrings.current.tap)
                     controlHint(icon: "hand.point.up", text: LocalizedStrings.current.longPress)
-                    controlHint(icon: "hand.tap.fill", text: LocalizedStrings.current.doubleTap)
                 }
             }
             .padding(.vertical, 8)
@@ -308,7 +313,7 @@ struct GameView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.playButtonTextColor)
                 .frame(width: 220, height: 44)
                 .background(
@@ -349,7 +354,7 @@ struct GameView: View {
                 .foregroundColor(.vikingAccent)
                 .frame(width: 18)
             Text(text)
-                .font(.system(size: 11, weight: .regular))
+                .font(.system(size: 13, weight: .regular))
                 .foregroundColor(.primaryText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -366,7 +371,7 @@ struct GameView: View {
             VStack(spacing: 12) {
                 HStack(spacing: 12) {
                     Text(LocalizedStrings.current.score)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.secondaryText)
                     Text("\(viewModel.engine.score)")
                         .font(.system(size: 24, weight: .bold))
@@ -375,7 +380,7 @@ struct GameView: View {
 
                 HStack(spacing: 12) {
                     Text(LocalizedStrings.current.lines)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.secondaryText)
                     Text("\(viewModel.engine.linesCleared)")
                         .font(.system(size: 20, weight: .bold))
@@ -386,10 +391,11 @@ struct GameView: View {
             HStack(spacing: 16) {
                 Button(action: {
                     audioManager.buttonClick()
+                    // Coins already awarded in gameOver(), just dismiss
                     dismiss()
                 }) {
                     Text(LocalizedStrings.current.mainMenu)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.primaryText)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -415,7 +421,7 @@ struct GameView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
                     }
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.playButtonTextColor)
                     .frame(width: 130, height: 44)
                     .background(
@@ -469,7 +475,7 @@ struct GameView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
                     }
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.playButtonTextColor)
                     .frame(width: 220, height: 48)
                     .background(
@@ -485,10 +491,12 @@ struct GameView: View {
 
                 Button(action: {
                     audioManager.buttonClick()
+                    // Award coins before exiting from paused game
+                    viewModel.finishGame()
                     dismiss()
                 }) {
                     Text(LocalizedStrings.current.mainMenu)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.primaryText)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -550,12 +558,6 @@ struct GameView: View {
             }
     }
 
-    private var doubleTapGesture: some Gesture {
-        TapGesture(count: 2)
-            .onEnded {
-                viewModel.handleDoubleTap()
-            }
-    }
 }
 
 #Preview {

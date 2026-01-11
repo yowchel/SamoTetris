@@ -105,7 +105,7 @@ struct LeaderboardView: View {
                     .foregroundColor(.titleText)
 
                 Text(LocalizedStrings.current.globalLeaderboardMessage)
-                    .font(.system(size: 14))
+                    .font(.system(size: 16))
                     .foregroundColor(.secondaryText)
                     .multilineTextAlignment(.center)
             }
@@ -116,7 +116,7 @@ struct LeaderboardView: View {
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(LocalizedStrings.current.achievements)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.vikingGold.opacity(0.8))
                 .padding(.leading, 4)
 
@@ -158,7 +158,7 @@ struct LeaderboardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.secondaryText)
 
                 Text(value)
@@ -194,7 +194,7 @@ struct LeaderboardView: View {
                     .foregroundColor(.primaryText)
 
                 Text(title)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.secondaryText)
             }
         }
@@ -219,11 +219,11 @@ struct LeaderboardView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(unlocked ? .primaryText : .secondaryText)
 
                 Text(description)
-                    .font(.system(size: 13))
+                    .font(.system(size: 15))
                     .foregroundColor(.secondaryText)
             }
 
@@ -252,7 +252,7 @@ struct LeaderboardView: View {
             action()
         }) {
             Text(title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(isSelected ? .primaryText : .secondaryText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)

@@ -248,9 +248,9 @@ struct LocalizedStrings {
 
     var longPress: String {
         switch language {
-        case .english: return "Long Press - Hard Drop"
-        case .russian: return "Долгое нажатие - Сброс"
-        case .french: return "Appui long - Chute rapide"
+        case .english: return "Long Press - Hold Piece"
+        case .russian: return "Долгое нажатие - Отложить"
+        case .french: return "Appui long - Retenir pièce"
         }
     }
 
@@ -494,17 +494,25 @@ struct LocalizedStrings {
 
     var particleEffects: String {
         switch language {
-        case .english: return "Particle Effects"
-        case .russian: return "Эффекты частиц"
-        case .french: return "Effets de particules"
+        case .english: return "Effects"
+        case .russian: return "Эффекты"
+        case .french: return "Effets"
         }
     }
 
     var boardFrames: String {
         switch language {
-        case .english: return "Board Frames"
-        case .russian: return "Рамки поля"
-        case .french: return "Cadres de plateau"
+        case .english: return "Frames"
+        case .russian: return "Рамки"
+        case .french: return "Cadres"
+        }
+    }
+
+    var backgrounds: String {
+        switch language {
+        case .english: return "Backgrounds"
+        case .russian: return "Фоны"
+        case .french: return "Arrière-plans"
         }
     }
 
@@ -512,27 +520,27 @@ struct LocalizedStrings {
         switch effect {
         case .stars:
             switch language {
-            case .english: return "Shimmering stars burst when clearing lines"
-            case .russian: return "Мерцающие звезды при очистке линий"
-            case .french: return "Des étoiles scintillantes apparaissent"
+            case .english: return "Shimmering stars burst upward from lines"
+            case .russian: return "Звезды взмывают вверх от линий"
+            case .french: return "Étoiles s'envolent des lignes"
             }
         case .confetti:
             switch language {
-            case .english: return "Colorful confetti celebrates your success"
-            case .russian: return "Цветное конфетти отмечает успех"
-            case .french: return "Des confettis colorés célèbrent"
+            case .english: return "Colorful confetti flies up celebrating"
+            case .russian: return "Конфетти взлетает вверх с линий"
+            case .french: return "Confettis s'envolent en célébrant"
             }
         case .lightning:
             switch language {
-            case .english: return "Electric lightning strikes lines"
-            case .russian: return "Молнии бьют по линиям"
-            case .french: return "Éclairs frappent les lignes"
+            case .english: return "Electric bolts shoot upward from lines"
+            case .russian: return "Молнии взмывают вверх от линий"
+            case .french: return "Éclairs s'élancent vers le haut"
             }
         case .fire:
             switch language {
-            case .english: return "Blazing fire burns through lines"
-            case .russian: return "Огонь сжигает линии"
-            case .french: return "Feu brûle les lignes"
+            case .english: return "Flames rise up from cleared lines"
+            case .russian: return "Пламя поднимается вверх от линий"
+            case .french: return "Flammes s'élèvent des lignes"
             }
         case .hearts:
             switch language {
@@ -542,9 +550,9 @@ struct LocalizedStrings {
             }
         case .sparkles:
             switch language {
-            case .english: return "Magical sparkles light up board"
-            case .russian: return "Искры освещают поле"
-            case .french: return "Étincelles illuminent plateau"
+            case .english: return "Sparkles shoot upward illuminating"
+            case .russian: return "Искры взмывают вверх освещая"
+            case .french: return "Étincelles s'envolent en illuminant"
             }
         }
     }
@@ -580,6 +588,18 @@ struct LocalizedStrings {
             case .english: return "Sparkling crystal border"
             case .russian: return "Кристаллическая граница"
             case .french: return "Bordure en cristal"
+            }
+        case .plasma:
+            switch language {
+            case .english: return "Pulsating plasma energy border"
+            case .russian: return "Пульсирующая плазменная рамка"
+            case .french: return "Bordure plasma pulsante"
+            }
+        case .rainbow:
+            switch language {
+            case .english: return "Rainbow spectrum shifting frame"
+            case .russian: return "Радужная переливающаяся рамка"
+            case .french: return "Cadre arc-en-ciel changeant"
             }
         }
     }
@@ -618,6 +638,18 @@ struct LocalizedStrings {
             case .russian: return "Черно-белая эстетика"
             case .french: return "Esthétique noir et blanc"
             }
+        case .sunset:
+            switch language {
+            case .english: return "Warm sunset with pink and orange hues"
+            case .russian: return "Теплый закат с розовыми оттенками"
+            case .french: return "Coucher de soleil chaud rose-orange"
+            }
+        case .ocean:
+            switch language {
+            case .english: return "Deep ocean with turquoise and coral"
+            case .russian: return "Глубокий океан с бирюзой и кораллами"
+            case .french: return "Océan profond turquoise et corail"
+            }
         }
     }
 
@@ -626,6 +658,52 @@ struct LocalizedStrings {
         case .english: return "Themes"
         case .russian: return "Темы"
         case .french: return "Thèmes"
+        }
+    }
+
+    func backgroundAnimationName(_ animation: BackgroundAnimation) -> String {
+        switch animation {
+        case .tetromino:
+            switch language {
+            case .english: return "Tetromino"
+            case .russian: return "Тетромино"
+            case .french: return "Tetromino"
+            }
+        case .bubbles:
+            switch language {
+            case .english: return "Bubbles"
+            case .russian: return "Пузыри"
+            case .french: return "Bulles"
+            }
+        case .particles:
+            switch language {
+            case .english: return "Particles"
+            case .russian: return "Частицы"
+            case .french: return "Particules"
+            }
+        }
+    }
+
+    func backgroundAnimationDescription(_ animation: BackgroundAnimation) -> String {
+        switch animation {
+        case .tetromino:
+            switch language {
+            case .english: return "Classic falling tetromino pieces"
+            case .russian: return "Классические падающие фигуры"
+            case .french: return "Pièces tetromino tombantes classiques"
+            }
+        case .bubbles:
+            switch language {
+            case .english: return "Floating bubbles drifting upward"
+            case .russian: return "Всплывающие пузыри"
+            case .french: return "Bulles flottantes montantes"
+            }
+        case .particles:
+            switch language {
+            case .english: return "Sparkling particles dancing around"
+            case .russian: return "Искрящиеся частицы"
+            case .french: return "Particules étincelantes dansantes"
+            }
         }
     }
 }

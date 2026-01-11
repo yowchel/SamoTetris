@@ -26,6 +26,7 @@ final class GameEngine: ObservableObject {
     private var canHold = true  // Prevents double-hold
     private var isAnimating = false  // Prevents new piece locks during line clear animation
     private let audioManager = AudioManager.shared
+    private let hapticManager = HapticManager.shared
 
     /// Ghost piece shows where current piece will land
     var ghostPiece: Tetromino? {
@@ -66,8 +67,18 @@ final class GameEngine: ObservableObject {
         state = .gameOver
         stopTimer()
 
-        // Play game over sound
+        // Play game over sound and haptic
         audioManager.gameOver()
+        hapticManager.gameOver()
+
+        // Award coins and update stats
+        finishGame()
+    }
+
+    /// Finish game and award coins (called on game over OR when exiting to menu)
+    func finishGame() {
+        // Only award coins if the game was actually played (score > 0 or lines cleared)
+        guard score > 0 || linesCleared > 0 else { return }
 
         // Award coins for the game
         let coinsEarned = CurrencyManager.shared.awardGameCoins(
@@ -79,7 +90,7 @@ final class GameEngine: ObservableObject {
         // Update stats
         updateStats()
 
-        print("Game Over! Earned \(coinsEarned) coins. Total: \(CurrencyManager.shared.coins)")
+        print("Game finished! Earned \(coinsEarned) coins. Total: \(CurrencyManager.shared.coins)")
     }
 
     /// Reset game state
@@ -147,6 +158,7 @@ final class GameEngine: ObservableObject {
         if board.canPlace(moved) {
             currentPiece = moved
             audioManager.pieceMoved()
+            hapticManager.pieceMoved()
         }
     }
 
@@ -157,6 +169,7 @@ final class GameEngine: ObservableObject {
         if board.canPlace(moved) {
             currentPiece = moved
             audioManager.pieceMoved()
+            hapticManager.pieceMoved()
         }
     }
 
@@ -220,14 +233,41 @@ final class GameEngine: ObservableObject {
         lockPiece()
     }
 
-    /// Rotate piece clockwise
+    /// Rotate piece clockwise with wall kicks
     func rotate() {
         guard state == .playing, let piece = currentPiece else { return }
         let rotated = piece.rotated()
+
+        // Try basic rotation first
         if board.canPlace(rotated) {
             currentPiece = rotated
             audioManager.pieceRotated()
+            hapticManager.pieceRotated()
+            return
         }
+
+        // Try wall kicks: left, right, left x2, right x2, up
+        let kicks: [Position] = [
+            Position(row: 0, column: -1),   // Left 1
+            Position(row: 0, column: 1),    // Right 1
+            Position(row: 0, column: -2),   // Left 2
+            Position(row: 0, column: 2),    // Right 2
+            Position(row: -1, column: 0),   // Up 1
+            Position(row: -1, column: -1),  // Up-Left
+            Position(row: -1, column: 1)    // Up-Right
+        ]
+
+        for kick in kicks {
+            let kicked = rotated.moved(by: kick)
+            if board.canPlace(kicked) {
+                currentPiece = kicked
+                audioManager.pieceRotated()
+                hapticManager.pieceRotated()
+                return
+            }
+        }
+
+        // If no wall kick worked, rotation fails silently
     }
 
     /// Hold current piece
@@ -246,6 +286,7 @@ final class GameEngine: ObservableObject {
                 currentPiece = newPiece
                 canHold = false
                 audioManager.pieceHeld()
+                hapticManager.pieceHeld()
             }
         } else {
             // First hold
@@ -253,6 +294,7 @@ final class GameEngine: ObservableObject {
             spawnNewPiece()
             canHold = false
             audioManager.pieceHeld()
+            hapticManager.pieceHeld()
         }
     }
 
@@ -268,9 +310,16 @@ final class GameEngine: ObservableObject {
         board.place(piece)
         currentPiece = nil
 
-        // Play lock sound
+        // Play lock sound and haptic
         audioManager.pieceLocked()
+        hapticManager.pieceLocked()
 
+        // Start line clearing chain
+        checkAndClearLines()
+    }
+
+    /// Recursively check and clear lines until no more full lines exist
+    private func checkAndClearLines() {
         // Check for line clears
         let fullLines = board.fullLines()
 
@@ -281,12 +330,14 @@ final class GameEngine: ObservableObject {
             // Mark lines for clearing animation
             clearingLines = Set(fullLines)
 
-            // Play appropriate sound based on line count
+            // Play appropriate sound and haptic based on line count
             let lineCount = fullLines.count
             if ScoreManager.isTetris(lineCount: lineCount) {
                 audioManager.tetris()
+                hapticManager.tetris()
             } else {
                 audioManager.lineCleared()
+                hapticManager.lineCleared()
             }
 
             // Animate line clear
@@ -310,20 +361,14 @@ final class GameEngine: ObservableObject {
                     tetrisCount += 1
                 }
 
-                // Animation done
+                // Animation done - but check for more lines!
                 isAnimating = false
 
-                // Check game over
-                if board.isGameOver() {
-                    gameOver()
-                    return
-                }
-
-                // Spawn next piece
-                spawnNewPiece()
+                // RECURSIVELY check for new full lines (cascade effect)
+                checkAndClearLines()
             }
         } else {
-            // No lines to clear - spawn immediately
+            // No more lines to clear - now spawn next piece
             // Check game over
             if board.isGameOver() {
                 gameOver()

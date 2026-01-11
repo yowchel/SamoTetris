@@ -60,4 +60,8 @@ final class GameViewModel: ObservableObject {
     func resumeGame() {
         engine.resume()
     }
+
+    func finishGame() {
+        engine.finishGame()
+    }
 }

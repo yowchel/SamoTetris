@@ -15,6 +15,7 @@ struct ParticleEffectView: View {
     let boardWidth: Int
 
     @State private var particles: [Particle] = []
+    @State private var previousClearingLines: Set<Int> = []
     @ObservedObject private var shopManager = ShopManager.shared
 
     var body: some View {
@@ -23,9 +24,20 @@ struct ParticleEffectView: View {
                 particleView(particle)
             }
         }
+        .onAppear {
+            // Мгновенная генерация при появлении новых линий
+            if !clearingLines.isEmpty && clearingLines != previousClearingLines {
+                generateParticles(for: clearingLines)
+                previousClearingLines = clearingLines
+            }
+        }
         .onChange(of: clearingLines) { newValue in
-            if !newValue.isEmpty {
+            // Мгновенная генерация без задержки
+            if !newValue.isEmpty && newValue != previousClearingLines {
                 generateParticles(for: newValue)
+                previousClearingLines = newValue
+            } else if newValue.isEmpty {
+                previousClearingLines = []
             }
         }
     }
@@ -231,17 +243,21 @@ struct ParticleEffectView: View {
     }
 
     private func generateParticles(for lines: Set<Int>) {
+        // Очищаем только старые частицы, не текущие
         particles.removeAll()
 
         let colors = effect.colors(for: shopManager.currentTheme)
         let particleCount = effect.particleCount
 
         for row in lines {
-            // ИСПРАВЛЕНО: добавляем padding 6
+            // Y позиция с учетом padding = 6
+            // row * blockSize дает верхнюю часть блока
+            // + blockSize/2 центрирует по вертикали блока
             let yPosition = 6 + (CGFloat(row) * blockSize) + (blockSize / 2)
 
             for _ in 0..<particleCount {
-                // ИСПРАВЛЕНО: добавляем padding 6 и учитываем ширину доски
+                // X позиция: от 6 (padding) до 6 + ширина доски
+                // Равномерно распределяем по всей ширине линии
                 let xPosition = 6 + CGFloat.random(in: 0...(CGFloat(boardWidth) * blockSize))
                 let initialPosition = CGPoint(x: xPosition, y: yPosition)
 
@@ -267,48 +283,47 @@ struct ParticleEffectView: View {
             }
         }
 
+        // Запускаем анимацию сразу же
         animateParticles()
     }
 
     private func animateParticles() {
+        // Анимируем все частицы одновременно
         for index in particles.indices {
-            animateParticle(at: index)
-        }
+            let particle = particles[index]
+            let duration = particle.lifespan
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            particles.removeAll()
-        }
-    }
+            // Мгновенный старт анимации без задержки
+            withAnimation(.easeOut(duration: duration)) {
+                particles[index].position = CGPoint(
+                    x: particle.position.x + particle.velocity.dx,
+                    y: particle.position.y + particle.velocity.dy
+                )
+                particles[index].opacity = 0
+                particles[index].scale = 0.3
+                particles[index].blur = 2
 
-    private func animateParticle(at index: Int) {
-        let particle = particles[index]
-        let duration = particle.lifespan
-
-        // ОПТИМИЗИРОВАНО: одна анимация вместо нескольких
-        withAnimation(.easeOut(duration: duration)) {
-            particles[index].position = CGPoint(
-                x: particle.position.x + particle.velocity.dx,
-                y: particle.position.y + particle.velocity.dy
-            )
-            particles[index].opacity = 0
-            particles[index].scale = 0.3
-            particles[index].blur = 2
-
-            // Rotation в той же анимации
-            switch particle.effect {
-            case .confetti:
-                particles[index].rotation = Double.random(in: 360...540)
-            case .stars:
-                particles[index].rotation = Double.random(in: -180...180)
-            case .hearts:
-                particles[index].rotation = Double.random(in: -20...20)
-            case .sparkles:
-                particles[index].rotation = 360
-            case .lightning:
-                particles[index].rotation = Double.random(in: -60...60)
-            case .fire:
-                particles[index].scale = 0.5
+                // Rotation в той же анимации
+                switch particle.effect {
+                case .confetti:
+                    particles[index].rotation = Double.random(in: 360...540)
+                case .stars:
+                    particles[index].rotation = Double.random(in: -180...180)
+                case .hearts:
+                    particles[index].rotation = Double.random(in: -20...20)
+                case .sparkles:
+                    particles[index].rotation = 360
+                case .lightning:
+                    particles[index].rotation = Double.random(in: -60...60)
+                case .fire:
+                    particles[index].scale = 0.5
+                }
             }
+        }
+
+        // Удаляем частицы после завершения анимации
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            particles.removeAll()
         }
     }
 }

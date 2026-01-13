@@ -65,15 +65,15 @@ enum ParticleEffect: String, CaseIterable {
     var iconView: some View {
         ZStack {
             // Dark background
-            RoundedRectangle(cornerRadius: 4)
+            RoundedRectangle(cornerRadius: 6)
                 .fill(Color.black.opacity(0.7))
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
 
             // Effect-specific icon with color
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 24, weight: .bold))
                 .foregroundColor(effectColor)
-                .shadow(color: effectColor.opacity(0.7), radius: 4)
+                .shadow(color: effectColor.opacity(0.7), radius: 5)
         }
     }
 
@@ -123,11 +123,11 @@ enum BoardFrame: String, CaseIterable {
         case .rainbow:
             // Rainbow gradient frame
             ZStack {
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(Color.black.opacity(0.6))
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
 
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .strokeBorder(
                         LinearGradient(
                             colors: [
@@ -141,24 +141,24 @@ enum BoardFrame: String, CaseIterable {
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 2.5
+                        lineWidth: 3.5
                     )
-                    .frame(width: 32, height: 32)
-                    .shadow(color: Color.purple.opacity(0.6), radius: 3)
+                    .frame(width: 44, height: 44)
+                    .shadow(color: Color.purple.opacity(0.6), radius: 4)
             }
         default:
             // Static frame preview (classic, golden, neon, wooden, crystal, plasma)
             ZStack {
                 // Background
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(Color.black.opacity(0.6))
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
 
                 // Frame border
-                RoundedRectangle(cornerRadius: 4)
-                    .strokeBorder(frameColor, lineWidth: lineWidth / 1.5)
-                    .frame(width: 32, height: 32)
-                    .shadow(color: glowColor.opacity(0.6), radius: 3)
+                RoundedRectangle(cornerRadius: 6)
+                    .strokeBorder(frameColor, lineWidth: lineWidth * 0.6)
+                    .frame(width: 44, height: 44)
+                    .shadow(color: glowColor.opacity(0.6), radius: 4)
             }
         }
     }
@@ -321,9 +321,9 @@ enum BackgroundAnimation: String, CaseIterable {
     var iconView: some View {
         switch self {
         case .tetromino:
-            // Falling tetromino blocks
+            // Falling tetromino blocks - показываем падающие блоки
             ZStack {
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -334,32 +334,52 @@ enum BackgroundAnimation: String, CaseIterable {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
 
-                VStack(spacing: 2) {
-                    HStack(spacing: 2) {
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(Color.purple)
-                            .frame(width: 6, height: 6)
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(Color.cyan)
-                            .frame(width: 6, height: 6)
+                // Три ряда блоков имитирующих падение
+                VStack(spacing: 3) {
+                    // Верхний ряд - более прозрачные (дальше)
+                    HStack(spacing: 3) {
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.cyan.opacity(0.4))
+                            .frame(width: 8, height: 8)
+                        Spacer()
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.purple.opacity(0.4))
+                            .frame(width: 8, height: 8)
                     }
-                    HStack(spacing: 2) {
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(Color.orange)
-                            .frame(width: 6, height: 6)
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(Color.yellow)
-                            .frame(width: 6, height: 6)
+                    .frame(width: 32)
+
+                    // Средний ряд
+                    HStack(spacing: 3) {
+                        Spacer()
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.orange.opacity(0.6))
+                            .frame(width: 8, height: 8)
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.yellow.opacity(0.6))
+                            .frame(width: 8, height: 8)
                     }
+                    .frame(width: 32)
+
+                    // Нижний ряд - яркие (ближе)
+                    HStack(spacing: 3) {
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.red)
+                            .frame(width: 8, height: 8)
+                        Spacer()
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(Color.green)
+                            .frame(width: 8, height: 8)
+                    }
+                    .frame(width: 32)
                 }
             }
 
         case .bubbles:
-            // Floating bubbles
+            // Floating bubbles - показываем плавающие пузыри с бликами
             ZStack {
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -370,32 +390,76 @@ enum BackgroundAnimation: String, CaseIterable {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
 
-                VStack(spacing: 3) {
-                    HStack(spacing: 3) {
+                // Пузыри разных размеров с бликами
+                ZStack {
+                    // Большой пузырь справа сверху
+                    ZStack {
                         Circle()
-                            .strokeBorder(Color.cyan.opacity(0.6), lineWidth: 1)
-                            .frame(width: 8, height: 8)
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [Color.cyan, Color.cyan.opacity(0.3)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                            .frame(width: 16, height: 16)
+                        // Блик
                         Circle()
-                            .strokeBorder(Color.purple.opacity(0.6), lineWidth: 1)
-                            .frame(width: 6, height: 6)
+                            .fill(Color.white.opacity(0.6))
+                            .frame(width: 4, height: 4)
+                            .offset(x: -3, y: -3)
                     }
-                    HStack(spacing: 3) {
+                    .offset(x: 6, y: -6)
+
+                    // Средний пузырь слева
+                    ZStack {
                         Circle()
-                            .strokeBorder(Color.pink.opacity(0.6), lineWidth: 1)
-                            .frame(width: 6, height: 6)
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [Color.purple, Color.purple.opacity(0.3)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                            .frame(width: 12, height: 12)
+                        // Блик
                         Circle()
-                            .strokeBorder(Color.blue.opacity(0.6), lineWidth: 1)
-                            .frame(width: 7, height: 7)
+                            .fill(Color.white.opacity(0.6))
+                            .frame(width: 3, height: 3)
+                            .offset(x: -2, y: -2)
                     }
+                    .offset(x: -8, y: 0)
+
+                    // Маленький пузырь внизу
+                    ZStack {
+                        Circle()
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [Color.pink, Color.pink.opacity(0.3)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                            .frame(width: 9, height: 9)
+                        // Блик
+                        Circle()
+                            .fill(Color.white.opacity(0.6))
+                            .frame(width: 2, height: 2)
+                            .offset(x: -1.5, y: -1.5)
+                    }
+                    .offset(x: 2, y: 8)
                 }
             }
 
         case .particles:
-            // Sparkling particles
+            // Sparkling particles - показываем звездное поле
             ZStack {
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -406,25 +470,52 @@ enum BackgroundAnimation: String, CaseIterable {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
 
-                // Small colored dots scattered
-                VStack(spacing: 4) {
-                    HStack(spacing: 5) {
-                        Circle().fill(Color.yellow).frame(width: 3, height: 3)
-                        Circle().fill(Color.cyan).frame(width: 2, height: 2)
-                        Circle().fill(Color.pink).frame(width: 3, height: 3)
-                    }
-                    HStack(spacing: 4) {
-                        Circle().fill(Color.white).frame(width: 2, height: 2)
-                        Circle().fill(Color.purple).frame(width: 3, height: 3)
-                        Circle().fill(Color.blue).frame(width: 2, height: 2)
-                    }
-                    HStack(spacing: 5) {
-                        Circle().fill(Color.green).frame(width: 2, height: 2)
-                        Circle().fill(Color.orange).frame(width: 3, height: 3)
-                        Circle().fill(Color.pink).frame(width: 2, height: 2)
-                    }
+                // Звездочки разного размера и яркости, более хаотично
+                ZStack {
+                    // Большие яркие звезды
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 10))
+                        .foregroundColor(.yellow)
+                        .offset(x: -8, y: -10)
+
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 8))
+                        .foregroundColor(.cyan)
+                        .offset(x: 10, y: -6)
+
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 9))
+                        .foregroundColor(.pink)
+                        .offset(x: -6, y: 8)
+
+                    // Средние звезды
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 3, height: 3)
+                        .offset(x: 6, y: 10)
+
+                    Circle()
+                        .fill(Color.purple)
+                        .frame(width: 3, height: 3)
+                        .offset(x: -10, y: 2)
+
+                    // Маленькие точки
+                    Circle()
+                        .fill(Color.orange.opacity(0.8))
+                        .frame(width: 2, height: 2)
+                        .offset(x: 8, y: -12)
+
+                    Circle()
+                        .fill(Color.green.opacity(0.8))
+                        .frame(width: 2, height: 2)
+                        .offset(x: -4, y: -4)
+
+                    Circle()
+                        .fill(Color.blue.opacity(0.8))
+                        .frame(width: 2, height: 2)
+                        .offset(x: 12, y: 4)
                 }
             }
         }

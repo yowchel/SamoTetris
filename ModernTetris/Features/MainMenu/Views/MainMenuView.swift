@@ -9,50 +9,26 @@ import SwiftUI
 
 /// Main menu screen
 struct MainMenuView: View {
-    @ObservedObject private var shopManager = ShopManager.shared
     @State private var showSettings = false
     @State private var showLeaderboard = false
     @State private var showShop = false
     @State private var showGame = false
     @State private var refreshID = UUID()
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [
-                    Color.vikingBackground,
-                    Color(red: 0.08, green: 0.05, blue: 0.12)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-
-            // Background animation based on selected type
-            Group {
-                switch shopManager.currentBackgroundAnimation {
-                case .tetromino:
-                    FallingTetrominoBackground()
-                case .bubbles:
-                    BubblesBackground()
-                case .particles:
-                    ParticlesBackground()
-                }
-            }
-            .ignoresSafeArea()
+            // Background is now managed by RootView - no need to recreate it here
+            Color.clear
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
                     .frame(height: 80)
 
-                // Title
-                Text(LocalizedStrings.current.appTitle)
-                    .font(.system(size: 52, weight: .bold))
-                    .foregroundColor(.titleText)
-                    .shadow(color: .titleText.opacity(0.5), radius: 15)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
+                // Title - Glassmorphic effect - updates when theme changes
+                GlassmorphicTitle(text: LocalizedStrings.current.appTitle)
+                    .id(themeManager.currentTheme.rawValue)
 
                 Spacer()
 

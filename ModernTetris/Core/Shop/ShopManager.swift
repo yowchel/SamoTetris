@@ -218,6 +218,9 @@ class ShopManager: ObservableObject {
         currentTheme = theme
         selectedThemeRaw = theme.rawValue
 
+        // Update ThemeManager to sync title colors
+        ThemeManager.shared.setTheme(theme)
+
         // Force UI refresh by triggering objectWillChange
         objectWillChange.send()
     }

@@ -79,6 +79,29 @@ extension GameTheme {
         }
     }
 
+    // Title colors - custom per theme
+    var titleTextColor: Color {
+        switch self {
+        case .viking: return Color(red: 0.3, green: 0.75, blue: 0.4)   // Green
+        case .neon: return Color(red: 0.0, green: 1.0, blue: 1.0)      // Bright neon cyan
+        case .metal: return Color(red: 0.85, green: 0.9, blue: 0.95)   // Silver
+        case .noir: return Color(red: 0.45, green: 0.45, blue: 0.45)   // Graphite
+        case .sunset: return Color(red: 1.0, green: 0.6, blue: 0.2)    // Orange (current)
+        case .ocean: return Color(red: 0.1, green: 0.4, blue: 0.85)    // Deep ocean blue
+        }
+    }
+
+    var titleGlowColor: Color {
+        switch self {
+        case .viking: return Color(red: 0.45, green: 0.3, blue: 0.2)   // Brown
+        case .neon: return Color(red: 0.7, green: 0.0, blue: 0.9)      // Purple
+        case .metal: return Color(red: 1.0, green: 0.85, blue: 0.4)    // Gold
+        case .noir: return Color(red: 0.85, green: 0.85, blue: 0.85)   // Gray-white
+        case .sunset: return Color(red: 1.0, green: 0.4, blue: 0.75)   // Pink-purple (current)
+        case .ocean: return Color(red: 0.3, green: 0.7, blue: 0.5)     // Seaweed green
+        }
+    }
+
     // UI Element colors
     var buttonGray: Color {
         switch self {
@@ -307,5 +330,30 @@ extension GameTheme {
         case .sunset: return Color(red: 0.15, green: 0.08, blue: 0.1, opacity: 0.2)
         case .ocean: return Color(red: 0.05, green: 0.1, blue: 0.15, opacity: 0.2)
         }
+    }
+}
+
+/// Theme manager - singleton for managing current theme
+class ThemeManager: ObservableObject {
+    static let shared = ThemeManager()
+
+    @Published var currentTheme: GameTheme {
+        didSet {
+            UserDefaults.standard.set(currentTheme.rawValue, forKey: "selectedTheme")
+        }
+    }
+
+    private init() {
+        // Load saved theme or default to viking
+        if let savedTheme = UserDefaults.standard.string(forKey: "selectedTheme"),
+           let theme = GameTheme(rawValue: savedTheme) {
+            self.currentTheme = theme
+        } else {
+            self.currentTheme = .viking
+        }
+    }
+
+    func setTheme(_ theme: GameTheme) {
+        currentTheme = theme
     }
 }

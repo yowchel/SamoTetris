@@ -77,8 +77,8 @@ final class GameEngine: ObservableObject {
 
     /// Finish game and award coins (called on game over OR when exiting to menu)
     func finishGame() {
-        // Only award coins if the game was actually played (score > 0 or lines cleared)
-        guard score > 0 || linesCleared > 0 else { return }
+        // Only award coins if at least one line was cleared
+        guard linesCleared > 0 else { return }
 
         // Award coins for the game
         let coinsEarned = CurrencyManager.shared.awardGameCoins(

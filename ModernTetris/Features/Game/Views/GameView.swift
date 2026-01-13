@@ -17,22 +17,32 @@ struct GameView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background
-                Color.vikingBackground.ignoresSafeArea()
+                // Background gradient with animation
+                LinearGradient(
+                    colors: [
+                        Color.vikingBackground,
+                        Color(red: 0.08, green: 0.05, blue: 0.12)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                // Background animation based on selected type - more pieces for game screen
+                // Background animation
                 Group {
                     switch shopManager.currentBackgroundAnimation {
                     case .tetromino:
-                        FallingTetrominoBackground(isGameScreen: true)
+                        FallingTetrominoBackground()
                     case .bubbles:
-                        BubblesBackground(isGameScreen: true)
+                        BubblesBackground()
                     case .particles:
-                        ParticlesBackground(isGameScreen: true)
+                        ParticlesBackground()
                     }
                 }
                 .ignoresSafeArea()
-                .opacity(0.3)
+
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
 
                 VStack(spacing: 0) {
                     // Top bar with Pause button (44x44 Apple standard) - centered
